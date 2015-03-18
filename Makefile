@@ -5,35 +5,76 @@
 ## Login   <amstuta@epitech.net>
 ##
 ## Started on  Wed Mar 18 19:47:55 2015 arthur
-## Last update Wed Mar 18 19:53:06 2015 arthur
+## Last update Wed Mar 18 20:16:36 2015 arthur
 ##
 
-RM	= rm -f
+SOURCES = main.ml
 
-CAMLC	= ocamlc
-CAMLOPT	= ocamlopt
+EXEC = bistro
 
-NAME	= bistro
+CAMLC = ocamlc
+CAMLOPT = ocamlopt
 
-SRCS	= main.ml
+all:	$(EXEC)
 
-OBJS	= $(SRCS:.ml=.cmo)
+opt:	$(EXEC).opt
 
-all:	$(NAME)
+SMLIY = $(SOURCES:.mly=.ml)
+SMLIYL = $(SMLIY:.mll=.ml)
+SMLYL = $(filter %.ml,$(SMLIYL))
+OBJS = $(SMLYL:.ml=.cmo)
+OPTOBJS = $(OBJS:.cmx=.cmx)
 
-$(NAME):$(OBJS)
-	$(CAMLC) $(OBJS) -o $(NAME)
+$(EXEC):$(OBJS)
+	$(CAMLC) $(CUSTOM) -o $(EXEC) $(LIBS) $(OBJS)
 
-.SUFFIXES: .ml .mli .cmo .cmi
+$(EXEC).opt:	$(OPTOBJS)
+		$(CAMLOPT) -o $(EXEC) $(OPTOBJS)
+
+.SUFFIXES: .ml .mli .cmo .cmi .cmx .mll .mly
 
 .ml.cmo:
 	$(CAMLC) -c $<
 
+.mli.cmi:
+	$(CAMLC) -c $<
+
+.ml.cmx:
+	$(CAMLOPT) -c $<
+
+.mll.cmo:
+	$(CAMLLEX) $<
+	$(CAMLC) -c $*.ml
+
+.mll.cmx:
+	$(CAMLLEX) $<
+	$(CAMLOPT) -c $*.ml
+
+.mly.cmo:
+	$(CAMLYACC) $<
+	$(CAMLC) -c $*.mli
+	$(CAMLC) -c $*.ml
+
+.mly.cmx:
+	$(CAMLYACC) $<
+	$(CAMLOPT) -c $*.mli
+	$(CAMLOPT) -c $*.ml
+
+.mly.cmi:
+	$(CAMLYACC) $<
+	$(CAMLC) -c $*.mli
+
+.mll.ml:
+	$(CAMLLEX) $<
+
+.mly.ml:
+	$(CAMLYACC) $<
+
 clean:
-	$(RM) *.cm[iox]
+	rm -f *.cm[iox] *~ .*~ *.o
 
 fclean:	clean
-	$(RM) $(NAME)
+	rm -f $(EXEC)
 
 re:	fclean all
 
