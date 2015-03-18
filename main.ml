@@ -18,11 +18,23 @@ let check_file file argc =
       close_in fd;
     end
 
+let read_in =
+  try
+    while true do
+      let line = input_line stdin in
+      print_endline line;
+      if line = "quit" then exit 1
+    done;
+  with
+    End_of_file -> ()
+
 let main =
   let argv = Array.to_list Sys.argv in
   let argc = List.length argv in
   if argc = 3 then
-    check_file (List.nth argv 2) argc;
+    check_file (List.nth argv 2) argc
+  else
+    read_in
   
 
     (*
