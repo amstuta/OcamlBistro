@@ -2,8 +2,8 @@ let rec read_file = function (fd) ->
     try
       let line = input_line fd in
       print_endline line;
-      line::read_file fd;
-    with End_of_file -> []
+      read_file fd;
+    with End_of_file -> ()
 
 let check_file file argc =
   if (Sys.file_exists file) = false then
@@ -23,6 +23,7 @@ let main =
   let argc = List.length argv in
   if argc = 3 then
     check_file (List.nth argv 2) argc;
+  
 
     (*
     print_int argc; (* Print le nb d'arguments *)
