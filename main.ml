@@ -2,7 +2,7 @@ let rec read_file = function (fd) ->
     try
       let line = input_line fd in
       print_endline line;
-      read_file fd;
+      read_file fd
     with End_of_file -> ()
 
 let check_file file argc =
@@ -15,10 +15,10 @@ let check_file file argc =
     begin
       let fd = open_in file in
       read_file fd;
-      close_in fd;
+      close_in fd
     end
 
-let read_in =
+let read_in () =
   try
     while true do
       let line = input_line stdin in
@@ -26,7 +26,7 @@ let read_in =
       if line = "quit" then exit 1
     done;
   with
-    End_of_file -> ()
+    End_of_file -> ();;
 
 let main =
   let argv = Array.to_list Sys.argv in
@@ -34,11 +34,6 @@ let main =
   if argc = 3 then
     check_file (List.nth argv 2) argc
   else
-    read_in
-  
+    read_in ();;
 
-    (*
-    print_int argc; (* Print le nb d'arguments *)
-    print_endline "";
-    print_endline (List.nth argv (argc - 1)); (* Print le dernier argument *)
-     *)
+main;;
