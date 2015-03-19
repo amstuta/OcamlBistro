@@ -8,7 +8,8 @@
 ## Last update Wed Mar 18 20:16:36 2015 arthur
 ##
 
-SOURCES = main.ml
+SOURCES = main.ml \
+	  Bigint.ml
 
 EXEC = bistro
 
@@ -41,34 +42,6 @@ $(EXEC).opt:	$(OPTOBJS)
 
 .ml.cmx:
 	$(CAMLOPT) -c $<
-
-.mll.cmo:
-	$(CAMLLEX) $<
-	$(CAMLC) -c $*.ml
-
-.mll.cmx:
-	$(CAMLLEX) $<
-	$(CAMLOPT) -c $*.ml
-
-.mly.cmo:
-	$(CAMLYACC) $<
-	$(CAMLC) -c $*.mli
-	$(CAMLC) -c $*.ml
-
-.mly.cmx:
-	$(CAMLYACC) $<
-	$(CAMLOPT) -c $*.mli
-	$(CAMLOPT) -c $*.ml
-
-.mly.cmi:
-	$(CAMLYACC) $<
-	$(CAMLC) -c $*.mli
-
-.mll.ml:
-	$(CAMLLEX) $<
-
-.mly.ml:
-	$(CAMLYACC) $<
 
 clean:
 	rm -f *.cm[iox] *~ .*~ *.o
