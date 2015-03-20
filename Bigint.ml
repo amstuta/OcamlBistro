@@ -48,13 +48,14 @@ let rec list_of_string str =
 let bigint_of_string str = ({value = (list_of_string str) ; sign = 0})
 
 
-
+(* Reverse une chaine pour le calcul *)
 let reverse_str s =
   let rec rev_in i =
     if i >= String.length s then ""
     else (rev_in (i+1))^(String.make 1 s.[i])
   in rev_in 0
 
+(* Ajoute des 0 pour que len(s1) == len(s2) *)
 let rec add_zeros str nb idx nstr =
   let len = String.length str in
   if idx >= len then ("0"^nstr^str)
@@ -62,15 +63,11 @@ let rec add_zeros str nb idx nstr =
     | 0 -> (nstr^str)
     | _ -> add_zeros str (nb - 1) (idx + 1) (nstr^"0")
 
-		     
+(* Addition infinie sur deux entiers non signes positifs *)
 let add b1 b2 =
   let rec sub_add l1 l2 res ret =
     match l1 with
-    | []   ->
-       begin
-	 if ret = 1 then '1'::res
-	 else res
-       end
+    | []   -> if ret = 1 then '1'::res else res
     | h::t ->
        begin
 	 let v1 = (Char.code h) in
