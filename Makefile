@@ -5,11 +5,12 @@
 ## Login   <amstuta@epitech.net>
 ##
 ## Started on  Wed Mar 18 19:47:55 2015 arthur
-## Last update Wed Mar 18 20:16:36 2015 arthur
+## Last update Fri Mar 20 16:35:34 2015 arthur
 ##
 
 SOURCES = main.ml \
-	  Bigint.ml
+	  Bigint.ml \
+	  eval_expr.ml
 
 EXEC = bistro
 
