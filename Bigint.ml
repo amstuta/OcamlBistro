@@ -57,7 +57,7 @@ let add_zeros l nb =
   in List.append (add_zeros_in nb) l
 
 
-(* Addition infinie sur deux entiers non signes positifs *)
+(* Addition infinie sur deux entiers non signes *)
 let add b1 b2 =
   let rec sub_add l1 l2 res ret =
     match l1 with
