@@ -48,20 +48,14 @@ let rec list_of_string str =
 let bigint_of_string str = ({value = (list_of_string str) ; sign = 0})
 
 
-(* Reverse une chaine pour le calcul *)
-let reverse_str s =
-  let rec rev_in i =
-    if i >= String.length s then ""
-    else (rev_in (i+1))^(String.make 1 s.[i])
-  in rev_in 0
+(* Met des 0 pour que l1.len == l2.len *)
+let add_zeros l nb =
+  let rec add_zeros_in nb =
+    match nb with
+    | 0   -> []
+    | _   -> '0'::(add_zeros_in (nb - 1))
+  in List.append (add_zeros_in nb) l
 
-(* Ajoute des 0 pour que len(s1) == len(s2) *)
-let rec add_zeros str nb idx nstr =
-  let len = String.length str in
-  if idx >= len then ("0"^nstr^str)
-  else match nb with
-    | 0 -> (nstr^str)
-    | _ -> add_zeros str (nb - 1) (idx + 1) (nstr^"0")
 
 (* Addition infinie sur deux entiers non signes positifs *)
 let add b1 b2 =
@@ -111,10 +105,9 @@ let tests =
   print_int f.sign;
   print_endline "";
 
-  (* Reverse les deux strings et les met a la meme longueur *)
-  let tmp = reverse_str (add_zeros "3" ((String.length "435") - (String.length "3")) 0 "") in
-  print_endline tmp;
-  print_endline (reverse_str "435");
+  let tmp2 = add_zeros ('1'::'2'::'3'::[]) 3 in
+  List.iter print_char tmp2;
+  print_endline "";
 
   (* Addition de deux bigints *)
   let b1 = { value = ('1'::'2'::'3'::[]) ; sign = 0 } in
