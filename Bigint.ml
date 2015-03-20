@@ -65,11 +65,14 @@ let b = { value = a; sign = 0 };;
 	    print_list_int e;;
 	      print_endline "";;
 
+	      let g = convert_base "0123456789" "0123456789ABCDEF" 13;;
+		print_list_int g;;
+		  print_endline "";;
 		
-	      let f = bigint_of_string "12345";;
-		print_string "Values: ";;
-		  print_list f.value;;
-		    print_endline "";;
-		      print_string "Sign: ";;
-			print_int f.sign;;
-			  print_endline "";;
+		  let f = bigint_of_string "12345";;
+		    print_string "Values: ";;
+		      print_list f.value;;
+			print_endline "";;
+			  print_string "Sign: ";;
+			    print_int f.sign;;
+			      print_endline "";;
