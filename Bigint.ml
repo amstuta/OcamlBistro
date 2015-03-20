@@ -6,10 +6,11 @@ let rec print_list = function
   | h::t ->
      begin
        print_char h;
+       print_string " | ";
        print_list t
      end
   | []   -> ()
-
+  
 let rec print_list_int = function
   | h::t ->
      if h > 64 && h < 91 then
@@ -38,7 +39,13 @@ let convert_base from tob nbr =
 	   cbase_in ((reste + 55)::aff) quotient quotient
        end
   in cbase_in [] nbr 1
-  ;;
+
+let rec list_of_string str =
+  match str with
+  | "" -> []
+  | ch -> str.[0]::(list_of_string(String.sub str 1 ((String.length str)-1)))
+
+let bigint_of_string str = ({value = (list_of_string str) ; sign = 0})
 
 
 let a = 'e'::'a'::[];;
@@ -57,3 +64,12 @@ let b = { value = a; sign = 0 };;
 	  let e = convert_base "0123456789" "01234567" 11;;
 	    print_list_int e;;
 	      print_endline "";;
+
+		
+	      let f = bigint_of_string "12345";;
+		print_string "Values: ";;
+		  print_list f.value;;
+		    print_endline "";;
+		      print_string "Sign: ";;
+			print_int f.sign;;
+			  print_endline "";;
