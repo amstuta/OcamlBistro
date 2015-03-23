@@ -6,7 +6,7 @@ type expression =
   | Mod of expression * expression
   | Val of int;;
 		
-			
+
 let rec eval_expr = function
   | Sum(expr1, expr2) -> (eval_expr expr1) + (eval_expr expr2)
   | Sub(expr1, expr2) -> (eval_expr expr1) - (eval_expr expr2)
