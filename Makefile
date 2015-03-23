@@ -8,8 +8,7 @@
 ## Last update Fri Mar 20 16:35:34 2015 arthur
 ##
 
-SOURCES = main.ml \
-	  Bigint.ml \
+SOURCES = Bigint.ml \
 	  eval_expr.ml
 
 EXEC = bistro
