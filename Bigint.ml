@@ -74,7 +74,8 @@ let add b1 b2 =
   in { value = (sub_add (List.rev b1.value) (List.rev b2.value) [] 0) ;
        sign = 0 }
 
-  
+
+(*
 let tests =
   let a = 'e'::'a'::[] in
   let b = { value = a; sign = 0 } in
@@ -115,3 +116,4 @@ let tests =
   let big = add b1 b2 in
   List.iter print_char big.value;
   print_endline "";
+ *)
