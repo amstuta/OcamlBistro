@@ -89,7 +89,7 @@ let convert_base from tob str =
   in convert_in 0 0 [];;
  *)
 
-print_list (convert_base "01" "0123456789" "0110");;
+(*print_list (convert_base "01" "0123456789" "0110");;*)
 
 
 let rec split_str str =
@@ -132,11 +132,31 @@ let bigint_of_string str =
   in
   let (sign, nbr) = get_sign str in
   let (base, nbr2)= get_base nbr in
-  convert_string sign base nbr2
+  convert_string sign Decimal nbr
  *)
-			
 
+let bigint_of_string str =
+  let get_sign str =
+    if (String.get str 0) = '-' then
+      (1, (String.sub str 1 (String.length str - 2)))
+    else (0, str)
+  in
+  (*
+  let convert_string sign base str =
+    match base with
+    | Hexadecimal -> { value = (hex_to_dec str); sign = sign}
+    | Binary      -> { value = (bin_to_dec str); sign = sign}
+    | Octal       -> { value = (oct_to_dec str); sign = sign}
+    | Decimal     -> { value = (split_str str);  sign = sign}
+  in*)
+  let rec convert_string nbr idx =
+    if idx >= (String.length nbr) then []
+    else nbr.[idx]::(convert_string nbr (idx + 1))
+  in
+  let (sign, nbr) = get_sign str in
+  { value = (convert_string nbr 0); sign = sign}
 
+  
 (* Addition infinie sur deux entiers non signes *)
 let add b1 b2 =
   let rec sub_add l1 l2 res ret =
@@ -151,11 +171,67 @@ let add b1 b2 =
 	 else
 	   sub_add t (List.tl l2) ((Char.chr (v1 + v2 + ret))::res) 0
        end
-  in { value = (sub_add (List.rev b1.value) (List.rev b2.value) [] 0) ;
-       sign = 0 }
+  in
+  let len1 = List.length b1.value in
+  let len2 = List.length b2.value in
+  if len1 > len2 then
+    {value = (sub_add (List.rev b1.value) (List.rev (add_zeros b2.value (len1 - len2))) [] 0) ;
+     sign = 0 }
+  else
+    {value = (sub_add (List.rev (add_zeros b1.value (len2 - len1))) (List.rev b2.value) [] 0) ;
+     sign = 0 }
+       
 
+let rec compare_bigints b1 b2 =
+  match (b1, b2) with
+  | ([], [])       -> true
+  | (h::t, hd::tl) -> if h = hd then compare_bigints t tl else false
+  | _              -> false
 
-(*
+    
+       
+let mul b1 b2 =
+  let res = { value = '1'::[]; sign = 0 } in
+  let rec mul2 result resa = function
+    | true  -> result
+    | false ->
+       begin
+	 mul2 (add result b2) (add resa { value = '1'::[]; sign = 0 }) (compare_bigints resa.value b1.value)
+       end
+  in mul2 { value = '0'::[]; sign = 0 } res false;;
+
+let rec pow nb pew =
+  match pew with
+  | 1 -> nb
+  | 0 -> {value = '1'::[];sign = 0} 
+  | _ -> (mul nb (pow nb (pew - 1)))
+			
+let convert_base from nbr =
+  let rev = reverse_str nbr in
+  let res = {value = '0'::[];sign = 0} in
+  let rec convert2 leni resa idx =
+    if idx = leni then resa
+    else
+       begin
+	 let now = String.index from rev.[idx] in
+	 let r = bigint_of_string (string_of_int now) in
+	 let fromint = bigint_of_string (string_of_int (String.length from)) in
+	 (*let idxint = bigint_of_string (string_of_int idx) in*)
+	 print_list fromint.value;
+	 print_endline "";
+	 print_int idx;
+	 print_endline "";
+	 let nbg = mul r (pow fromint (idx)) in
+	 let final = add nbg resa in
+	 convert2 leni final (idx + 1)
+       end
+  in
+  let leni = String.length rev in
+  convert2 leni res 0;;
+
+print_list (convert_base "0123456789ABCDEF" "AF").value;;
+  
+  (*
 let tests =
   let a = 'e'::'a'::[] in
   let b = { value = a; sign = 0 } in
