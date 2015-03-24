@@ -2,6 +2,8 @@ type bigint = {
   value : (char list);
   sign : int }
 
+type base = Binary | Octal | Decimal | Hexadecimal
+
 let rec print_list = function
   | h::t ->
      begin
@@ -25,6 +27,20 @@ let rec print_list_int = function
        end
   | []   -> ()
 
+(* Met des 0 pour que l1.len == l2.len *)
+let add_zeros l nb =
+  let rec add_zeros_in nb =
+    match nb with
+    | 0   -> []
+    | _   -> '0'::(add_zeros_in (nb - 1))
+  in List.append (add_zeros_in nb) l
+
+
+
+
+
+
+(*
 let convert_base from tob nbr =
   let diviseur = (String.length tob) in
   let rec cbase_in aff nb = function
@@ -39,22 +55,86 @@ let convert_base from tob nbr =
 	   cbase_in ((reste + 55)::aff) quotient quotient
        end
   in cbase_in [] nbr 1
+ *)
 
-let rec list_of_string str =
+let reverse_str s =
+  let rec helper i =
+    if i >= String.length s then "" else (helper (i+1))^(String.make 1 s.[i])
+  in helper 0
+
+let get_index_base c = function
+  | Hexadecimal -> String.index "0123456789ABCDEF" (Char.uppercase c)
+  | Binary      -> String.index "01" c
+  | Octal       -> String.index "01234567" c
+  | Decimal     -> String.index "0123456789" c
+  
+(*
+let convert_base from tob str =
+  let str2 = reverse_str str in
+  let rec convert_in reste idx tab =
+    if idx >= (String.length str2) then tab
+    else
+      begin
+	let int = (String.index from str2.[idx]) + reste in
+	let nint = int mod (String.length tob) in
+	let rest = int / (String.length tob) in
+	if reste = 0 && idx > 0 then
+	  let int1 = Char.code (List.hd tab) in
+	  let sum = Char.chr (int1 + reste) in
+	  let ntab = sum::(List.tl tab) inv
+	  convert_in rest (idx + 1) ntab
+	else
+	  convert_in rest (idx + 1) ((tob.[nint])::tab)
+      end
+  in convert_in 0 0 [];;
+ *)
+
+print_list (convert_base "01" "0123456789" "0110");;
+
+
+let rec split_str str =
   match str with
   | "" -> []
-  | ch -> str.[0]::(list_of_string(String.sub str 1 ((String.length str)-1)))
-
-let bigint_of_string str = ({value = (list_of_string str) ; sign = 0})
+  | ch -> str.[0]::(split_str(String.sub str 1 ((String.length str)-1)))
 
 
-(* Met des 0 pour que l1.len == l2.len *)
-let add_zeros l nb =
-  let rec add_zeros_in nb =
-    match nb with
-    | 0   -> []
-    | _   -> '0'::(add_zeros_in (nb - 1))
-  in List.append (add_zeros_in nb) l
+(* Convertit un bigint en string *)
+let string_of_bigint nbr =
+  let rec build_str str = function
+    | []   -> str
+    | h::t -> build_str (str^(String.make 1 h)) t
+  in
+  if nbr.sign = 0 then build_str "" nbr.value
+  else build_str "-" nbr.value;;
+
+
+(*
+let bigint_of_string str =
+  let get_sign str =
+    if (String.get str 0) = '-' then
+      (1, (String.sub str 1 (String.length str - 2)))
+    else (0, str)
+  in
+  let get_base str =
+    if (String.get str 0) = '0' then
+      match (String.get str 1) with
+      | 'x' -> (Hexadecimal, (String.sub str 2 ((String.length str) - 1)))
+      | 'b' -> (Binary, (String.sub str 2 ((String.length str) - 1)))
+      | _   -> (Octal, (String.sub str 2 ((String.length str) - 1)))
+    else (Decimal, str)
+  in
+  let convert_string sign base str =
+    match base with
+    | Hexadecimal -> { value = (hex_to_dec str); sign = sign}
+    | Binary      -> { value = (bin_to_dec str); sign = sign}
+    | Octal       -> { value = (oct_to_dec str); sign = sign}
+    | Decimal     -> { value = (split_str str);  sign = sign}
+  in
+  let (sign, nbr) = get_sign str in
+  let (base, nbr2)= get_base nbr in
+  convert_string sign base nbr2
+ *)
+			
 
 
 (* Addition infinie sur deux entiers non signes *)
@@ -116,4 +196,6 @@ let tests =
   let big = add b1 b2 in
   List.iter print_char big.value;
   print_endline "";
+
+print_endline (string_of_bigint { value = ('0'::'1'::'2'::[]); sign = 1});
  *)

@@ -24,7 +24,7 @@ SMLIY = $(SOURCES:.mly=.ml)
 SMLIYL = $(SMLIY:.mll=.ml)
 SMLYL = $(filter %.ml,$(SMLIYL))
 OBJS = $(SMLYL:.ml=.cmo)
-OPTOBJS = $(OBJS:.cmx=.cmx)
+OPTOBJS = $(OBJS:.ml=.cmx)
 
 $(EXEC):$(OBJS)
 	$(CAMLC) $(CUSTOM) -o $(EXEC) $(LIBS) $(OBJS)

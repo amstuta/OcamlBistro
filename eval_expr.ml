@@ -79,7 +79,7 @@ let find_par str i =
 	 | _   -> find_in nb (idx + 1)
   in find_in 1 i
 
-	     
+
 (* Renvoit true si le char est un nombre *)
 let is_number = function
   | '+' | '-' | '*' | '/' | '%' | '(' | ')' | ' ' -> false
