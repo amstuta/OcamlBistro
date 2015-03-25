@@ -182,6 +182,10 @@ let rec compare_bigints b1 b2 =
        
 let mul b1 b2 =
   let res = { value = '1'::[]; sign = 0 } in
+  if (compare_bigints  b1.value ('0'::[])) = true
+     || (compare_bigints  b2.value ('0'::[])) = true
+  then { value = '0'::[]; sign = 0}
+  else
   let rec mul2 result resa = function
     | true  -> result
     | false ->
@@ -190,36 +194,32 @@ let mul b1 b2 =
        end
   in mul2 { value = '0'::[]; sign = 0 } res false;;
 
-let rec pow nb pew =
-  match pew with
-  | 1 -> nb
-  | 0 -> {value = '1'::[];sign = 0} 
-  | _ -> (mul nb (pow nb (pew - 1)))
-			
+
+let pow nb p =
+  let rec pow_rec nb p acc =
+    if p = 0 then acc
+    else pow_rec nb (p - 1) (mul acc nb)
+  in pow_rec nb p {value = '1'::[]; sign = 0}
+
+	     
 let convert_base from nbr =
   let rev = reverse_str nbr in
   let res = {value = '0'::[];sign = 0} in
   let rec convert2 leni resa idx =
-    if idx = leni then resa
+    if idx >= leni then resa
     else
-       begin
-	 let now = String.index from rev.[idx] in
-	 let r = bigint_of_string (string_of_int now) in
-	 let fromint = bigint_of_string (string_of_int (String.length from)) in
-	 (*let idxint = bigint_of_string (string_of_int idx) in*)
-	 print_list fromint.value;
-	 print_endline "";
-	 print_int idx;
-	 print_endline "";
-	 let nbg = mul r (pow fromint (idx)) in
-	 let final = add nbg resa in
-	 convert2 leni final (idx + 1)
-       end
+      let now = String.index from rev.[idx] in
+      let r = bigint_of_string (string_of_int now) in
+      let fromint = bigint_of_string (string_of_int (String.length from)) in
+      let nbg = mul r (pow fromint idx) in
+      let final = add nbg resa in
+      convert2 leni final (idx + 1)
   in
   let leni = String.length rev in
   convert2 leni res 0;;
 
-print_list (convert_base "0123456789ABCDEF" "10").value;;
+  print_list (convert_base "0123456789ABCDEF" "1A").value;;
+    print_endline "";;
   
   (*
 let tests =
