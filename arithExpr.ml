@@ -185,6 +185,26 @@ let rec feed expr =
   else if (is_number expr.[1]) = true && expr.[0] = '-' then feed_in 0 1 [] []
   else feed_in 1 1 [] []
 
+(*
+let add_parenthesis expr =
+  let rec ap_in idx nexpr =
+    if idx = (String.length expr) then nexpr
+    else
+      begin
+	let nop = next_op idx in
+	if nop = '*' || nop = '/' || nop = '%' then
+	  (*
+              Ajouter des parentheses jusqu au prochain operator non prioritaire
+              ou la prochaine parenthese && avancer idx a cet index
+	   *)
+	else
+	  ap_in (idx + 1) (nexpr^(String.make 1 expr.[idx]))
+      end
+  in ap_in 0 ""
+ *)	       
 
 (* Resoud une expression *)
-let solve_arith_expr expr = eval_expr (feed expr)
+let solve_arith_expr expr =
+  (*let a = add_parenthesis expr in
+  print_endline a;*)
+  eval_expr (feed expr)

@@ -66,6 +66,6 @@ let main =
   | 4 -> if (Array.get Sys.argv 2) <> "-obase" then
 	   raise (Invalid_argument "Wrong argument")
 	 else check_file (Array.get Sys.argv 3)
-  | _ -> raise (Invalid_argument "Usage: ./bistro [-obase (2|8|10|16)] [inputfile]");;
+  | _ -> raise (Invalid_argument "Usage: ./bistro [-obase (2|8|10|16)] [inputfile]")
 
-main;;
+let _ = main
