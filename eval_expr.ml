@@ -97,14 +97,14 @@ let rec compile_expr nbrs ops =
 	 let lhs = List.hd nbrs in
 	 let rhs = List.hd (List.tl nbrs) in
 	 let nnbrs = List.tl (List.tl nbrs) in
-	 let nops = List.tl ops in
+	 (*let nops = List.tl ops in*)
 	 match h with
-	 | '+' -> compile_expr (Sum (lhs, rhs)::nnbrs) nops
-	 | '-' -> compile_expr (Sub (lhs, rhs)::nnbrs) nops
-	 | '*' -> compile_expr (Mul (lhs, rhs)::nnbrs) nops
-	 | '/' -> compile_expr (Div (lhs, rhs)::nnbrs) nops
-	 | '%' -> compile_expr (Mod (lhs, rhs)::nnbrs) nops
-	 | _   -> compile_expr nbrs nops
+	 | '+' -> compile_expr (Sum (lhs, rhs)::nnbrs) t
+	 | '-' -> compile_expr (Sub (lhs, rhs)::nnbrs) t
+	 | '*' -> compile_expr (Mul (lhs, rhs)::nnbrs) t
+	 | '/' -> compile_expr (Div (lhs, rhs)::nnbrs) t
+	 | '%' -> compile_expr (Mod (lhs, rhs)::nnbrs) t
+	 | _   -> compile_expr nbrs t
      end
 
        
@@ -174,7 +174,7 @@ let rec read_file = function (fd) ->
 
 
 (* Check l'existence du fichier *)
-let check_file file argc =
+let check_file file =
   if (Sys.file_exists file) = false then
     begin
       print_endline "Error: file doesn't exist";
@@ -208,7 +208,7 @@ let main =
   let argv = Array.to_list Sys.argv in
   let argc = List.length argv in
   if argc = 3 then
-    check_file (List.nth argv 2) argc
+    check_file (List.nth argv 2)
   else
     read_in ();;
 

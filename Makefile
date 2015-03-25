@@ -1,54 +1,45 @@
-##
-## Makefile for makefile in /home/amstuta/rendu/ocaml_bistro
-##
-## Made by arthur
-## Login   <amstuta@epitech.net>
-##
-## Started on  Wed Mar 18 19:47:55 2015 arthur
-## Last update Fri Mar 20 16:35:34 2015 arthur
-##
+NAME = bistro
 
-SOURCES = Bigint.ml \
-	  eval_expr.ml
+ML  = bigint.ml \
+      eval_expr.ml
+MLI = bigint.mli
 
-EXEC = bistro
+OCAMLFLAGS = -w A
 
-CAMLC = ocamlc
-CAMLOPT = ocamlopt
+CMX = $(ML:.ml=.cmx)
+CMO = $(ML:.ml=.cmo)
+CMI = $(ML:.ml=.cmi)
 
-all:	$(EXEC)
+.PHONY: byte clean fclean re
+.SUFFIXES: .ml .mli .cmo .cmi .cmx
 
-opt:	$(EXEC).opt
+all: $(NAME)
+byte: $(NAME).byte
 
-SMLIY = $(SOURCES:.mly=.ml)
-SMLIYL = $(SMLIY:.mll=.ml)
-SMLYL = $(filter %.ml,$(SMLIYL))
-OBJS = $(SMLYL:.ml=.cmo)
-OPTOBJS = $(OBJS:.ml=.cmx)
+$(NAME): $(CMX)
+	ocamlopt -o $(NAME) $+
 
-$(EXEC):$(OBJS)
-	$(CAMLC) $(CUSTOM) -o $(EXEC) $(LIBS) $(OBJS)
-
-$(EXEC).opt:	$(OPTOBJS)
-		$(CAMLOPT) -o $(EXEC) $(OPTOBJS)
-
-.SUFFIXES: .ml .mli .cmo .cmi .cmx .mll .mly
+$(NAME).byte: $(CMO)
+	ocamlc  -o $(NAME) $+
 
 .ml.cmo:
-	$(CAMLC) -c $<
+	ocamlc -c $(OCAMLFLAGS) $<
 
 .mli.cmi:
-	$(CAMLC) -c $<
+	ocamlc -c $(OCAMLFLAGS) $<
 
 .ml.cmx:
-	$(CAMLOPT) -c $<
+	ocamlopt -c $(OCAMLFLAGS) $<
 
 clean:
-	rm -f *.cm[iox] *~ .*~ *.o
+	rm -f $(CMX) $(CMO) $(CMI) $(CMX:.cmx=.o) .depend
 
-fclean:	clean
-	rm -f $(EXEC)
+fclean: clean
+	rm -f $(NAME)
 
-re:	fclean all
+re: fclean all
 
-.PHONY:	all clean fclean re
+.depend: $(MLI) $(ML)
+	ocamldep $(ML) $(MLI) > .depend
+
+-include .depend
