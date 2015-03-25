@@ -1,9 +1,7 @@
-type bigint = {
-  value : (char list);
-  sign : int }
-
+type bigint = { value : (char list); sign : int }
 type base = Binary | Octal | Decimal | Hexadecimal
 
+					 
 let rec print_list = function
   | h::t ->
      begin
@@ -58,9 +56,9 @@ let convert_base from tob nbr =
  *)
 
 let reverse_str s =
-  let rec helper i =
-    if i >= String.length s then "" else (helper (i+1))^(String.make 1 s.[i])
-  in helper 0
+  let rec rev_in i =
+    if i >= String.length s then "" else (rev_in (i+1))^(String.make 1 s.[i])
+  in rev_in 0
 
 let get_index_base c = function
   | Hexadecimal -> String.index "0123456789ABCDEF" (Char.uppercase c)
@@ -141,14 +139,6 @@ let bigint_of_string str =
       (1, (String.sub str 1 (String.length str - 2)))
     else (0, str)
   in
-  (*
-  let convert_string sign base str =
-    match base with
-    | Hexadecimal -> { value = (hex_to_dec str); sign = sign}
-    | Binary      -> { value = (bin_to_dec str); sign = sign}
-    | Octal       -> { value = (oct_to_dec str); sign = sign}
-    | Decimal     -> { value = (split_str str);  sign = sign}
-  in*)
   let rec convert_string nbr idx =
     if idx >= (String.length nbr) then []
     else nbr.[idx]::(convert_string nbr (idx + 1))
@@ -229,7 +219,7 @@ let convert_base from nbr =
   let leni = String.length rev in
   convert2 leni res 0;;
 
-print_list (convert_base "0123456789ABCDEF" "AF").value;;
+print_list (convert_base "0123456789ABCDEF" "10").value;;
   
   (*
 let tests =
