@@ -55,41 +55,22 @@ let convert_base from tob nbr =
   in cbase_in [] nbr 1
  *)
 
+		 
+(* Reverse une string *)
 let reverse_str s =
   let rec rev_in i =
     if i >= String.length s then "" else (rev_in (i+1))^(String.make 1 s.[i])
   in rev_in 0
 
+(* Recupere l'index du char dans la base *)
 let get_index_base c = function
   | Hexadecimal -> String.index "0123456789ABCDEF" (Char.uppercase c)
   | Binary      -> String.index "01" c
   | Octal       -> String.index "01234567" c
   | Decimal     -> String.index "0123456789" c
-  
-(*
-let convert_base from tob str =
-  let str2 = reverse_str str in
-  let rec convert_in reste idx tab =
-    if idx >= (String.length str2) then tab
-    else
-      begin
-	let int = (String.index from str2.[idx]) + reste in
-	let nint = int mod (String.length tob) in
-	let rest = int / (String.length tob) in
-	if reste = 0 && idx > 0 then
-	  let int1 = Char.code (List.hd tab) in
-	  let sum = Char.chr (int1 + reste) in
-	  let ntab = sum::(List.tl tab) inv
-	  convert_in rest (idx + 1) ntab
-	else
-	  convert_in rest (idx + 1) ((tob.[nint])::tab)
-      end
-  in convert_in 0 0 [];;
- *)
-
-(*print_list (convert_base "01" "0123456789" "0110");;*)
 
 
+(* Str -> List *)
 let rec split_str str =
   match str with
   | "" -> []
@@ -104,47 +85,6 @@ let string_of_bigint nbr =
   in
   if nbr.sign = 0 then build_str "" nbr.value
   else build_str "-" nbr.value;;
-
-
-(*
-let bigint_of_string str =
-  let get_sign str =
-    if (String.get str 0) = '-' then
-      (1, (String.sub str 1 (String.length str - 2)))
-    else (0, str)
-  in
-  let get_base str =
-    if (String.get str 0) = '0' then
-      match (String.get str 1) with
-      | 'x' -> (Hexadecimal, (String.sub str 2 ((String.length str) - 1)))
-      | 'b' -> (Binary, (String.sub str 2 ((String.length str) - 1)))
-      | _   -> (Octal, (String.sub str 2 ((String.length str) - 1)))
-    else (Decimal, str)
-  in
-  let convert_string sign base str =
-    match base with
-    | Hexadecimal -> { value = (hex_to_dec str); sign = sign}
-    | Binary      -> { value = (bin_to_dec str); sign = sign}
-    | Octal       -> { value = (oct_to_dec str); sign = sign}
-    | Decimal     -> { value = (split_str str);  sign = sign}
-  in
-  let (sign, nbr) = get_sign str in
-  let (base, nbr2)= get_base nbr in
-  convert_string sign Decimal nbr
- *)
-
-let bigint_of_string str =
-  let get_sign str =
-    if (String.get str 0) = '-' then
-      (1, (String.sub str 1 (String.length str - 2)))
-    else (0, str)
-  in
-  let rec convert_string nbr idx =
-    if idx >= (String.length nbr) then []
-    else nbr.[idx]::(convert_string nbr (idx + 1))
-  in
-  let (sign, nbr) = get_sign str in
-  { value = (convert_string nbr 0); sign = sign}
 
   
 (* Addition infinie sur deux entiers non signes *)
@@ -170,16 +110,16 @@ let add b1 b2 =
   else
     {value = (sub_add (List.rev (add_zeros b1.value (len2 - len1))) (List.rev b2.value) [] 0) ;
      sign = 0 }
-       
 
+(* True si b1 = b2 *)
 let rec compare_bigints b1 b2 =
   match (b1, b2) with
   | ([], [])       -> true
   | (h::t, hd::tl) -> if h = hd then compare_bigints t tl else false
   | _              -> false
 
-    
-       
+
+(* Multiplication infinie *)
 let mul b1 b2 =
   let res = { value = '1'::[]; sign = 0 } in
   if (compare_bigints  b1.value ('0'::[])) = true
@@ -195,22 +135,38 @@ let mul b1 b2 =
   in mul2 { value = '0'::[]; sign = 0 } res false;;
 
 
+(* Pow bigint nb *)
 let pow nb p =
   let rec pow_rec nb p acc =
     if p = 0 then acc
     else pow_rec nb (p - 1) (mul acc nb)
   in pow_rec nb p {value = '1'::[]; sign = 0}
 
-	     
-let convert_base from nbr =
+(* String -> bigint sans gestion du signe ou de la base *)
+let get_bigint str =
+  let get_sign str =
+    if (String.get str 0) = '-' then
+      (1, (String.sub str 1 (String.length str - 2)))
+    else (0, str)
+  in
+  let rec convert_string nbr idx =
+    if idx >= (String.length nbr) then []
+    else nbr.[idx]::(convert_string nbr (idx + 1))
+  in
+  let (sign, nbr) = get_sign str in
+  { value = (convert_string nbr 0); sign = sign}
+    
+
+(* Convertit un bigint en base 10 *)
+let convert_base from nbr signe =
   let rev = reverse_str nbr in
-  let res = {value = '0'::[];sign = 0} in
-  let rec convert2 leni resa idx =
+  let res = {value = '0'::[];sign = signe} in
+    let rec convert2 leni resa idx =
     if idx >= leni then resa
     else
       let now = String.index from rev.[idx] in
-      let r = bigint_of_string (string_of_int now) in
-      let fromint = bigint_of_string (string_of_int (String.length from)) in
+      let r = get_bigint (string_of_int now) in
+      let fromint = get_bigint (string_of_int (String.length from)) in
       let nbg = mul r (pow fromint idx) in
       let final = add nbg resa in
       convert2 leni final (idx + 1)
@@ -218,50 +174,35 @@ let convert_base from nbr =
   let leni = String.length rev in
   convert2 leni res 0;;
 
-  print_list (convert_base "0123456789ABCDEF" "1A").value;;
-    print_endline "";;
-  
-  (*
-let tests =
-  let a = 'e'::'a'::[] in
-  let b = { value = a; sign = 0 } in
-  print_list b.value;
-  print_endline "";
-      
-  let c = convert_base "0123456789" "01" 10 in
-  print_list_int c;
-  print_endline "";
 
-  let d = convert_base "0123456789" "0123456789ABCDEF" 11 in
-  print_list_int d;
-  print_endline "";
-	    
-  let e = convert_base "0123456789" "01234567" 11 in
-  print_list_int e;
-  print_endline "";
+(* Convertit un string en bigint *)
+let bigint_of_string str =
+  let get_sign str =
+    if (String.get str 0) = '-' then
+      (1, (String.sub str 1 (String.length str - 2)))
+    else (0, str)
+  in
+  let get_base str =
+    if (String.get str 0) = '0' then
+      match (String.get str 1) with
+      | 'x' -> (Hexadecimal, (String.sub str 2 ((String.length str) - 2)))
+      | 'b' -> (Binary, (String.sub str 2 ((String.length str) - 2)))
+      | _   -> (Octal, (String.sub str 1 ((String.length str) - 1)))
+    else (Decimal, str)
+  in
+  let convert_string sign base str =
+    match base with
+    | Hexadecimal -> convert_base "0123456789ABCDEF" str sign
+    | Binary      -> convert_base "01" str sign
+    | Octal       -> convert_base "01234567" str sign
+    | Decimal     -> { value = (split_str str);  sign = sign}
+  in
+  let (sign, nbr) = get_sign str in
+  let (base, nbr2)= get_base nbr in
+  print_endline nbr2;
+  convert_string sign base nbr2;;
 
-  let g = convert_base "0123456789" "0123456789ABCDEF" 13 in
-  print_list_int g;
-  print_endline "";
-		
-  let f = bigint_of_string "12345" in
-  print_string "Values: ";
-  print_list f.value;
-  print_endline "";
-  print_string "Sign: ";
-  print_int f.sign;
-  print_endline "";
 
-  let tmp2 = add_zeros ('1'::'2'::'3'::[]) 3 in
-  List.iter print_char tmp2;
-  print_endline "";
-
-  (* Addition de deux bigints *)
-  let b1 = { value = ('1'::'2'::'3'::[]) ; sign = 0 } in
-  let b2 = { value = ('9'::'3'::'8'::[]) ; sign = 0} in
-  let big = add b1 b2 in
-  List.iter print_char big.value;
-  print_endline "";
-
-print_endline (string_of_bigint { value = ('0'::'1'::'2'::[]); sign = 1});
- *)
+  print_list (bigint_of_string "0x10").value;;
+  print_endline "";;
+		 
