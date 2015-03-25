@@ -16,11 +16,12 @@ CMI = $(ML:.ml=.cmi)
 all: $(NAME)
 byte: $(NAME).byte
 
-$(NAME): $(CMX)
-	ocamlopt -o $(NAME) $+
-
-$(NAME).byte: $(CMO)
+$(NAME):$(CMO)
 	ocamlc  -o $(NAME) $+
+
+$(NAME).byte:	$(CMX)
+		ocamlopt -o $(NAME) $+
+
 
 .ml.cmo:
 	ocamlc -c $(OCAMLFLAGS) $<
