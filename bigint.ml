@@ -106,10 +106,7 @@ let mul b1 b2 =
   else
     let rec mul2 result resa = function
       | true  -> result
-      | false ->
-	 begin
-	   mul2 (add result b2) (add resa { value = '1'::[]; sign = 0 }) (compare_bigints resa.value b1.value)
-	 end
+      | false -> mul2 (add result b2) (add resa { value = '1'::[]; sign = 0 }) (compare_bigints resa.value b1.value)
     in mul2 { value = '0'::[]; sign = 0 } res false;;
 
 (*
@@ -189,5 +186,4 @@ let bigint_of_string str =
   in
   let (sign, nbr) = get_sign str in
   let (base, nbr2)= get_base nbr in
-  print_endline nbr2;
   convert_string sign base nbr2;;

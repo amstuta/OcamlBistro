@@ -31,6 +31,27 @@ let rec print_list_expr = function
   | h::t -> print_endline (string_of_arith_expr2 h); print_list_expr t
 
 
+(* NPI sur la liste d'expressions *)
+let rec compile_expr nbrs ops =
+  match ops with
+  | []   -> List.hd nbrs
+  | h::t ->
+     begin
+       if (List.length nbrs < 2) then raise (Failure "Invalid expression")
+       else
+	 let lhs = List.hd nbrs in
+	 let rhs = List.hd (List.tl nbrs) in
+	 let nnbrs = List.tl (List.tl nbrs) in
+	 match h with
+	 | '+' -> compile_expr (Sum (lhs, rhs)::nnbrs) t
+	 | '*' -> compile_expr (Mul (lhs, rhs)::nnbrs) t
+	 (*| '-' -> compile_expr (Sub (lhs, rhs)::nnbrs) t
+	 | '/' -> compile_expr (Div (lhs, rhs)::nnbrs) t
+	 | '%' -> compile_expr (Mod (lhs, rhs)::nnbrs) t*)
+	 | _   -> compile_expr nbrs t
+     end
+
+
 let rec solve_arith_expr = function
   | Sum(expr1, expr2) -> add (solve_arith_expr expr1) (solve_arith_expr expr2)
   (*| Sub(expr1, expr2) -> (solve_arith_expr expr1) - (solve_arith_expr expr2)*)

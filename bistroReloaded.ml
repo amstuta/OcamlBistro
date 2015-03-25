@@ -38,27 +38,6 @@ let is_number = function
   | _ -> true
 
 
-(* NPI sur la liste d'expressions *)
-let rec compile_expr nbrs ops =
-  match ops with
-  | []   -> List.hd nbrs
-  | h::t ->
-     begin
-       if (List.length nbrs < 2) then raise (Failure "Invalid expression")
-       else
-	 let lhs = List.hd nbrs in
-	 let rhs = List.hd (List.tl nbrs) in
-	 let nnbrs = List.tl (List.tl nbrs) in
-	 match h with
-	 | '+' -> compile_expr (Sum (lhs, rhs)::nnbrs) t
-	 | '*' -> compile_expr (Mul (lhs, rhs)::nnbrs) t
-	 (*| '-' -> compile_expr (Sub (lhs, rhs)::nnbrs) t
-	 | '/' -> compile_expr (Div (lhs, rhs)::nnbrs) t
-	 | '%' -> compile_expr (Mod (lhs, rhs)::nnbrs) t*)
-	 | _   -> compile_expr nbrs t
-     end
-
-
 (* Recupere le dernier nombre de la chaine *)
 let get_last_nbr expr =
   let len = String.length expr in

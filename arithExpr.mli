@@ -13,3 +13,4 @@ val string_of_arith_expr : arith_expr   -> string
 val string_of_arith_expr2: arith_expr   -> string
 val print_list_expr : (arith_expr list) -> unit
 val solve_arith_expr : arith_expr -> bigint
+val compile_expr : (arith_expr list) -> (char list) -> arith_expr
