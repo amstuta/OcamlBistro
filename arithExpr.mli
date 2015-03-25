@@ -1,13 +1,6 @@
 open Bigint
 
-type arith_expr =
-  | Sum of arith_expr * arith_expr
-  (*| Sub of arith_expr * arith_expr*)
-  | Mul of arith_expr * arith_expr
-  (*| Div of arith_expr * arith_expr
-  | Mod of arith_expr * arith_expr*)
-  | Val of bigint
-
+type arith_expr
 
 val string_of_arith_expr : arith_expr   -> string
 val string_of_arith_expr2: arith_expr   -> string

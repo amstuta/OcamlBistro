@@ -1,5 +1,5 @@
-type bigint = { value : (char list); sign : int }
-type base = Binary | Octal | Decimal | Hexadecimal
+type bigint
+type base
 						
 val bigint_of_string : string -> bigint
 val string_of_bigint : bigint -> string
