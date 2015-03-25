@@ -8,7 +8,10 @@ MLI =	bigint.mli \
 	arithExpr.mli \
 	bistroReloaded.mli
 
-OCAMLFLAGS = -w A
+CAMLC	  = ocamlc
+CAMLDEP	  = ocamldep
+CAMLOPT   = ocamlopt
+CAMLFLAGS = -w A
 
 CMX = $(ML:.ml=.cmx)
 CMO = $(ML:.ml=.cmo)
@@ -21,20 +24,20 @@ all: $(NAME)
 byte: $(NAME).byte
 
 $(NAME):$(CMO)
-	ocamlc  -o $(NAME) $+
+	$(CAMLC)  -o $(NAME) $+
 
-$(NAME).byte:	$(CMX)
-		ocamlopt -o $(NAME) $+
+$(NAME).byte:$(CMX)
+	     $(CAMLOPT) -o $(NAME) $+
 
 
 .ml.cmo:
-	ocamlc -c $(OCAMLFLAGS) $<
+	$(CAMLC) -c $(CAMLFLAGS) $<
 
 .mli.cmi:
-	ocamlc -c $(OCAMLFLAGS) $<
+	$(CAMLC) -c $(CAMLFLAGS) $<
 
 .ml.cmx:
-	ocamlopt -c $(OCAMLFLAGS) $<
+	$(CAMLOPT) -c $(CAMLFLAGS) $<
 
 clean:
 	rm -f $(CMX) $(CMO) $(CMI) $(CMX:.cmx=.o) .depend
@@ -44,7 +47,7 @@ fclean: clean
 
 re: fclean all
 
-.depend: $(MLI) $(ML)
-	ocamldep $(ML) $(MLI) > .depend
+.depend:$(MLI) $(ML)
+	$(CAMLDEP) $(ML) $(MLI) > .depend
 
 -include .depend
