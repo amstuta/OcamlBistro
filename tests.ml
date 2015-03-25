@@ -1,4 +1,27 @@
-  (*
+(*let rec print_list = function
+  | h::t ->
+     begin
+       print_char h;
+       print_string " | ";
+       print_list t
+     end
+  | []   -> ()
+	      
+let rec print_list_int = function
+  | h::t ->
+     if h > 64 && h < 91 then
+       begin
+	 print_char (char_of_int h);
+	 print_list_int t;
+       end
+     else
+       begin
+	 print_int h;
+	 print_list_int t;
+       end
+  | []   -> ()*)
+
+(*
 let tests =
   let a = 'e'::'a'::[] in
   let b = { value = a; sign = 0 } in
@@ -41,4 +64,7 @@ let tests =
   print_endline "";
 
 print_endline (string_of_bigint { value = ('0'::'1'::'2'::[]); sign = 1});
+
+  print_list (bigint_of_string "0x10").value;;
+  print_endline "";;
  *)

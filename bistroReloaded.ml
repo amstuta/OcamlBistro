@@ -1,55 +1,5 @@
 open Bigint
-
-type expression =
-  | Sum of expression * expression
-  (*| Sub of expression * expression*)
-  | Mul of expression * expression
-  (*| Div of expression * expression
-  | Mod of expression * expression*)
-  | Val of bigint;;
-		
-
-let rec eval_expr = function
-  | Sum(expr1, expr2) -> add (eval_expr expr1) (eval_expr expr2)
-  (*| Sub(expr1, expr2) -> (eval_expr expr1) - (eval_expr expr2)*)
-  | Mul(expr1, expr2) -> mul (eval_expr expr1) (eval_expr expr2)
-  (*| Div(expr1, expr2) ->
-     begin
-       let tmp = eval_expr expr2 in
-       match tmp with
-       | 0 -> raise (Failure "Division par 0!")
-       | _ -> (eval_expr expr1) / (eval_expr expr2)
-     end
-  | Mod(expr1, expr2) ->
-     begin
-       let tmp = eval_expr expr2 in
-       match tmp with
-       | 0 -> raise (Failure "Modulo par 0!")
-       | _ -> (eval_expr expr1) mod (eval_expr expr2)
-     end*)
-  | Val(value) -> value
-
-let rec print_expr = function
-  | Sum(expr1, expr2) -> String.concat "" ["("; (print_expr expr1); "+"; (print_expr expr2); ")"]
-  | Mul(expr1, expr2) -> String.concat "" ["("; (print_expr expr1); "*"; (print_expr expr2); ")"]
-  (*| Sub(expr1, expr2) -> String.concat "" ["("; (print_expr expr1); "-"; (print_expr expr2); ")"]
-  | Div(expr1, expr2) -> String.concat "" ["("; (print_expr expr1); "/"; (print_expr expr2); ")"]
-  | Mod(expr1, expr2) -> String.concat "" ["("; (print_expr expr1); "%"; (print_expr expr2); ")"]*)
-  | Val(value) -> string_of_bigint value
-
-let rec print_expr_c = function
-  | Sum(expr1, expr2) -> String.concat "" ["(Sum "; (print_expr_c expr1); ","; (print_expr_c expr2); ")"]
-  | Mul(expr1, expr2) -> String.concat "" ["(Mul "; (print_expr_c expr1); ","; (print_expr_c expr2); ")"]
-(*  | Sub(expr1, expr2) -> String.concat "" ["(Sub "; (print_expr_c expr1); ","; (print_expr_c expr2); ")"]
-  | Div(expr1, expr2) -> String.concat "" ["(Div "; (print_expr_c expr1); ","; (print_expr_c expr2); ")"]
-  | Mod(expr1, expr2) -> String.concat "" ["(Mod "; (print_expr_c expr1); ","; (print_expr_c expr2); ")"]*)
-  | Val(value) -> string_of_bigint value;;
-
-let rec print_list_expr = function
-  | []   -> ()
-  | h::t -> print_endline (print_expr_c h); print_list_expr t
-
-
+open ArithExpr
 							    
 (* Trouve la parenthese correspondante -> substr *)
 let find_sub_par str i =
@@ -64,8 +14,8 @@ let find_sub_par str i =
 	 | '(' -> find_in (nb + 1) (idx + 1)
 	 | _   -> find_in nb (idx + 1)
   in let res = find_in 1 i
-     in String.sub str i res;;
-
+     in String.sub str i res
+  
 
 (* Renvoit idx parenthese correspondante *)
 let find_par str i =
@@ -99,7 +49,6 @@ let rec compile_expr nbrs ops =
 	 let lhs = List.hd nbrs in
 	 let rhs = List.hd (List.tl nbrs) in
 	 let nnbrs = List.tl (List.tl nbrs) in
-	 (*let nops = List.tl ops in*)
 	 match h with
 	 | '+' -> compile_expr (Sum (lhs, rhs)::nnbrs) t
 	 | '*' -> compile_expr (Mul (lhs, rhs)::nnbrs) t
@@ -169,11 +118,11 @@ let rec check_line idx line =
 (* Lit toutes les lignes d'un fichier *)
 let rec read_file = function (fd) ->
 			     try
-      let line = input_line fd in
-      print_endline line;
-      read_file fd
-    with End_of_file -> ()
-
+			       let line = input_line fd in
+			       print_endline line;
+			       read_file fd
+			     with End_of_file -> ()
+						   
 
 (* Check l'existence du fichier *)
 let check_file file =
@@ -199,8 +148,8 @@ let read_in () =
       else if (check_line 0 line) = true then
 	(* Enlever espaces fin *)
 	let res = feed line in
-	print_endline (print_expr_c res);
-	print_endline (string_of_bigint  (eval_expr res));
+	print_endline (string_of_arith_expr2 res);
+	print_endline (string_of_bigint (solve_arith_expr res));
     done;
   with
     End_of_file -> ()

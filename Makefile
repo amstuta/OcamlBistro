@@ -1,8 +1,12 @@
-NAME = bistro
+NAME =	bistro
 
-ML  = bigint.ml \
-      eval_expr.ml
-MLI = bigint.mli
+ML  =	bigint.ml \
+	arithExpr.ml \
+	bistroReloaded.ml
+
+MLI =	bigint.mli \
+	arithExpr.mli \
+	bistroReloaded.mli
 
 OCAMLFLAGS = -w A
 
