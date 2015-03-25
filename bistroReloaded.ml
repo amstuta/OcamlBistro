@@ -3,11 +3,12 @@ open ArithExpr
 
 (* Check la validite de la chaine *)
 let rec check_line idx line =
-  let nbrs = "0123456789abcdef" in
+  let nbrs = "0123456789abcdefx" in
   let ops = "+-*/%() " in
   if idx >= (String.length line) then true
   else if (String.contains nbrs line.[idx]) = true
-	  || (String.contains ops line.[idx]) = true
+	|| (String.contains nbrs (Char.lowercase line.[idx]))
+	|| (String.contains ops line.[idx]) = true
   then check_line (idx + 1) line
   else raise (Failure "Invalid operand")
 

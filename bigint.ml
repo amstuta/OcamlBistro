@@ -151,7 +151,7 @@ let convert_base from nbr signe =
   let rec convert2 leni resa idx =
     if idx >= leni then resa
     else
-      let now = String.index from rev.[idx] in
+      let now = String.index from (Char.uppercase rev.[idx]) in
       let r = get_bigint (string_of_int now) in
       let fromint = get_bigint (string_of_int (String.length from)) in
       let nbg = mul r (pow fromint idx) in

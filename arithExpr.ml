@@ -134,46 +134,27 @@ let get_last_nbr expr =
      else String.sub expr (i + 1) (len - i - 1)
 
 
-(*
+(* Check si il n'y a qu'un nombre dans l'expression *)
+let only_one_nbr expr =
+  let rec oon_in len idx =
+    if idx = (String.length expr) then true
+    else match expr.[idx] with
+      | '+' | '-' | '*' | '/' | '%' -> false
+      | _ -> oon_in len (idx + 1)
+  in
+  if (String.length expr) = 0 then true
+  else if expr.[0] = '-' then oon_in (String.length expr) 1
+  else oon_in (String.length expr) 0
+
+
 (* Parcourt l'expr et construit les listes d'ops & d'exprs *)
 let rec feed expr =
   let rec feed_in beg idx nbrs ops =
     let len = String.length expr in
-    if idx >= len then compile_expr (List.rev nbrs) (List.rev ops)
-    else if (is_number expr.[idx]) = true && idx = (len - 1) then
-      let nnbrs = ((Val (bigint_of_string (get_last_nbr expr)))::nbrs) in
-      feed_in (idx) (idx + 1) nnbrs ops
-    else if (is_number expr.[idx]) = true && (is_number expr.[(idx - 1)]) = false then
-      feed_in idx (idx + 1) nbrs ops
-    else if (is_number expr.[idx]) = false then
-      begin
-	let nnbrs =
-	  if (is_number expr.[(idx - 1)]) = true && beg > 0 && expr.[(beg - 1)] = '-' then
-	    ((Val (bigint_of_string (String.sub expr (beg - 1) (idx - beg + 1))))::nbrs)
-	  else if (is_number expr.[(idx - 1)]) = true then
-	    ((Val (bigint_of_string (String.sub expr beg (idx - beg))))::nbrs)
-	  else nbrs in
-	match expr.[idx] with
-	| '(' ->
-	   begin
-	     let sub = String.sub expr idx (len - idx) in
-	     let v = feed (find_sub_par sub 1) in
-	     let nidx = find_par sub 1 in
-	     feed_in beg (nidx + idx + 2) (v::nnbrs) ops
-	   end
-	| '+' | '-' | '*' | '/' | '%' -> feed_in beg (idx + 1) nnbrs (expr.[idx]::ops)
-	| _   -> feed_in beg (idx + 1) nnbrs ops
-      end
-    else feed_in beg (idx + 1) nbrs ops
-  in
-  if (is_number expr.[0]) = true then feed_in 0 1 [] []
-  else feed_in 1 1 [] []*)
-
-
-let rec feed expr =
-  let rec feed_in beg idx nbrs ops =
-    let len = String.length expr in
-    if idx >= len then compile_expr (List.rev nbrs) (List.rev ops)
+    if (only_one_nbr expr) = true then
+      compile_expr ((Val (bigint_of_string expr))::[]) []
+    else if idx >= len then
+      compile_expr (List.rev nbrs) (List.rev ops)
     else if (is_number expr.[idx]) = true && idx = (len - 1) then
       begin
 	let nnbrs = ((Val (bigint_of_string (get_last_nbr expr)))::nbrs) in
@@ -191,12 +172,10 @@ let rec feed expr =
 	  else nbrs in
 	match expr.[idx] with
 	| '(' ->
-	   begin
-	     let sub = String.sub expr idx (len - idx) in
-	     let v = feed (find_sub_par sub 1) in
-	     let nidx = find_par sub 1 in
-	     feed_in beg (nidx + idx + 2) (v::nnbrs) ops
-	   end
+	   let sub = String.sub expr idx (len - idx) in
+	   let v = feed (find_sub_par sub 1) in
+	   let nidx = find_par sub 1 in
+	   feed_in beg (nidx + idx + 2) (v::nnbrs) ops
 	| '+' | '-' | '*' | '/' | '%' -> feed_in beg (idx + 1) nnbrs (expr.[idx]::ops)
 	| _   -> feed_in beg (idx + 1) nnbrs ops
       end
