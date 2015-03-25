@@ -99,6 +99,8 @@ let rec read_file = function (fd) ->
 			     try
 			       let line = input_line fd in
 			       print_endline line;
+			       print_string "Result: ";
+			       print_endline (string_of_bigint (solve_arith_expr (feed line)));
 			       read_file fd
 			     with End_of_file -> ()
 						   
@@ -127,7 +129,8 @@ let read_in () =
       else if (check_line 0 line) = true then
 	(* Enlever espaces fin *)
 	let res = feed line in
-	print_endline (string_of_arith_expr2 res);
+	(*print_endline (string_of_arith_expr2 res);*)
+	print_string "Result: ";
 	print_endline (string_of_bigint (solve_arith_expr res));
     done;
   with
