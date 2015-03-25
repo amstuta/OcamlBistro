@@ -166,7 +166,7 @@ let convert_base from nbr signe =
 let bigint_of_string str =
   let get_sign str =
     if (String.get str 0) = '-' then
-      (1, (String.sub str 1 (String.length str - 2)))
+      (1, (String.sub str 1 (String.length str - 1)))
     else (0, str)
   in
   let get_base str =
@@ -186,4 +186,6 @@ let bigint_of_string str =
   in
   let (sign, nbr) = get_sign str in
   let (base, nbr2)= get_base nbr in
-  convert_string sign base nbr2;;
+  let a = convert_string sign base nbr2 in
+  (*print_endline (string_of_bigint a);*)
+  a

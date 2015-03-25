@@ -48,7 +48,7 @@ let read_in () =
 	(* Enlever espaces fin *)
 	(*print_endline (string_of_arith_expr2 res);*)
 	print_string "Result: ";
-	print_endline (string_of_bigint (solve_arith_expr line));
+      print_endline (string_of_bigint (solve_arith_expr line))
     done;
   with
     End_of_file -> ()

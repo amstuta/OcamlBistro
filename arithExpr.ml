@@ -37,7 +37,11 @@ let rec compile_expr nbrs ops =
   | []   -> List.hd nbrs
   | h::t ->
      begin
-       if (List.length nbrs < 2) then raise (Failure "Invalid expression")
+       (*
+       print_endline "------------";
+       List.iter print_char ops;
+       print_endline "------------";*)
+       if (List.length nbrs < 2) then (List.hd nbrs) (*raise (Failure "Invalid expression")*)
        else
 	 let lhs = List.hd nbrs in
 	 let rhs = List.hd (List.tl nbrs) in
@@ -71,28 +75,12 @@ let rec eval_expr = function
        | _ -> (eval_expr expr1) mod (eval_expr expr2)
      end*)
   | Val(value) -> value
-
-
-(* Trouve la parenthese correspondante -> substr *)
-let find_sub_par str i =
-  let rec find_in nb idx =
-    if idx >= (String.length str) then raise (Failure "find_par")
-    else match str.[idx] with
-	 | ')' ->
-	    begin
-	      if nb = 1 then (idx - 1)
-	      else find_in (nb - 1) (idx + 1)
-	    end
-	 | '(' -> find_in (nb + 1) (idx + 1)
-	 | _   -> find_in nb (idx + 1)
-  in let res = find_in 1 i
-     in String.sub str i res
   
 
 (* Renvoit idx parenthese correspondante *)
 let find_par str i =
   let rec find_in nb idx =
-    if idx >= (String.length str) then raise (Failure "find_par")
+    if idx >= (String.length str) then raise (Failure "Missing closing parenthesis")
     else match str.[idx] with
 	 | ')' ->
 	    begin
@@ -104,10 +92,30 @@ let find_par str i =
   in find_in 1 i
 
 
+(* Trouve la parenthese correspondante -> substr *)
+let find_sub_par str i =
+  let rec find_in nb idx =
+    if idx >= (String.length str) then raise (Failure "Missing closing parenthesis")
+    else match str.[idx] with
+	 | ')' ->
+	    begin
+	      if nb = 1 then (idx - 1)
+	      else find_in (nb - 1) (idx + 1)
+	    end
+	 | '(' -> find_in (nb + 1) (idx + 1)
+	 | _   -> find_in nb (idx + 1)
+  in let res = find_in 1 i
+     in String.sub str i res
+	     
+
 (* Renvoit true si le char est un nombre *)
 let is_number = function
   | '+' | '-' | '*' | '/' | '%' | '(' | ')' | ' ' -> false
   | _ -> true
+
+let is_operator = function
+  | '+' | '-' | '*' | '/' | '%' | '(' -> true
+  | _ -> false
 
 
 (* Recupere le dernier nombre de la chaine *)
@@ -118,11 +126,15 @@ let get_last_nbr expr =
     else match expr.[idx] with
 	 | '+' | '-' | '*' | '/' | '%' | '(' | ')' | ' ' -> idx
 	 | _ -> find_last (idx - 1)
-  in
-  let i = find_last (len - 1) in
-  String.sub expr (i + 1) (len - i - 1)
+  in let i = find_last (len - 1) in
+     if expr.[i] = '-' && i > 1 && (is_operator expr.[(i - 1)]) = true then
+       String.sub expr i (len - i)
+     else if i = 0 && expr.[i] = '-' then
+       String.sub expr i (len - i)
+     else String.sub expr (i + 1) (len - i - 1)
 
 
+(*
 (* Parcourt l'expr et construit les listes d'ops & d'exprs *)
 let rec feed expr =
   let rec feed_in beg idx nbrs ops =
@@ -135,9 +147,12 @@ let rec feed expr =
       feed_in idx (idx + 1) nbrs ops
     else if (is_number expr.[idx]) = false then
       begin
-	let nnbrs = if (is_number expr.[(idx - 1)]) = true then
-		      ((Val (bigint_of_string (String.sub expr beg (idx - beg))))::nbrs)
-		    else nbrs in
+	let nnbrs =
+	  if (is_number expr.[(idx - 1)]) = true && beg > 0 && expr.[(beg - 1)] = '-' then
+	    ((Val (bigint_of_string (String.sub expr (beg - 1) (idx - beg + 1))))::nbrs)
+	  else if (is_number expr.[(idx - 1)]) = true then
+	    ((Val (bigint_of_string (String.sub expr beg (idx - beg))))::nbrs)
+	  else nbrs in
 	match expr.[idx] with
 	| '(' ->
 	   begin
@@ -152,6 +167,43 @@ let rec feed expr =
     else feed_in beg (idx + 1) nbrs ops
   in
   if (is_number expr.[0]) = true then feed_in 0 1 [] []
+  else feed_in 1 1 [] []*)
+
+
+let rec feed expr =
+  let rec feed_in beg idx nbrs ops =
+    let len = String.length expr in
+    if idx >= len then compile_expr (List.rev nbrs) (List.rev ops)
+    else if (is_number expr.[idx]) = true && idx = (len - 1) then
+      begin
+	let nnbrs = ((Val (bigint_of_string (get_last_nbr expr)))::nbrs) in
+	feed_in (idx) (idx + 1) nnbrs ops
+      end
+    else if (is_number expr.[idx]) = true && (is_number expr.[(idx - 1)]) = false then
+      feed_in idx (idx + 1) nbrs ops
+    else if (is_number expr.[idx]) = false then
+      begin
+	let nnbrs =
+	  if (is_number expr.[(idx - 1)]) = true && beg > 0 && expr.[(beg - 1)] = '-' then
+	    ((Val (bigint_of_string (String.sub expr (beg - 1) (idx - beg + 1))))::nbrs)
+	  else if (is_number expr.[(idx - 1)]) = true then
+	    ((Val (bigint_of_string (String.sub expr beg (idx - beg))))::nbrs)
+	  else nbrs in
+	match expr.[idx] with
+	| '(' ->
+	   begin
+	     let sub = String.sub expr idx (len - idx) in
+	     let v = feed (find_sub_par sub 1) in
+	     let nidx = find_par sub 1 in
+	     feed_in beg (nidx + idx + 2) (v::nnbrs) ops
+	   end
+	| '+' | '-' | '*' | '/' | '%' -> feed_in beg (idx + 1) nnbrs (expr.[idx]::ops)
+	| _   -> feed_in beg (idx + 1) nnbrs ops
+      end
+    else feed_in beg (idx + 1) nbrs ops	 
+  in
+  if (is_number expr.[0]) = true then feed_in 0 1 [] []
+  else if (is_number expr.[1]) = true && expr.[0] = '-' then feed_in 0 1 [] []
   else feed_in 1 1 [] []
 
 
