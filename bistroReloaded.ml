@@ -13,15 +13,15 @@ let rec check_line idx line =
   else raise (Failure "Invalid operand")
 
 
-(* Lit toutes les lignes d'un fichier *)
-let rec read_file = function (fd) ->
-			     try
-			       let line = input_line fd in
-			       print_endline line;
-			       print_string "Result: ";
-			       print_endline (string_of_bigint (solve_arith_expr line));
-			       read_file fd
-			     with End_of_file -> ()
+(* Lit un fichier ligne par ligne *)
+let rec read_file fd =
+  try
+    let line = input_line fd in
+    print_endline line;
+    print_string "Result: ";
+    print_endline (string_of_bigint (solve_arith_expr line));
+    read_file fd
+  with End_of_file -> ()
 						   
 
 (* Check l'existence du fichier *)
@@ -40,7 +40,7 @@ let check_file file =
 
 
 (* Lit les exprs sur stdin *)
-let read_in () =
+let read_in =
   try
     while true do
       let line = input_line stdin in
@@ -54,12 +54,18 @@ let read_in () =
   with
     End_of_file -> ()
 
+
 let main =
-  let argv = Array.to_list Sys.argv in
-  let argc = List.length argv in
-  if argc = 3 then
-    check_file (List.nth argv 2)
-  else
-    read_in ();;
+  let argc = Array.length Sys.argv in
+  match argc with
+  | 1 -> read_in
+  | 2 -> check_file (Array.get Sys.argv 2)
+  | 3 -> if (Array.get Sys.argv 2) <> "-obase" then
+	   raise (Invalid_argument "Wrong argument")
+	 else read_in
+  | 4 -> if (Array.get Sys.argv 2) <> "-obase" then
+	   raise (Invalid_argument "Wrong argument")
+	 else check_file (Array.get Sys.argv 3)
+  | _ -> raise (Invalid_argument "Usage: ./bistro [-obase (2|8|10|16)] [inputfile]");;
 
 main;;
