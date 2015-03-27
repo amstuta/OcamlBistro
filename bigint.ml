@@ -63,6 +63,30 @@ let string_of_bigint nbr =
   if nbr.sign = 0 then build_str "" nbr.value
   else build_str "-" nbr.value;;
 
+(*soustraction infinie*)
+let sub b1 b2 =
+  let rec sub_sub l1 l2 res ret=
+    match l1 with
+    | []   -> if ret = 1 then '1'::res else res
+    | h::t ->
+       begin
+	 let v1 = (Char.code h) - 48 in
+	 let v2 = (Char.code (List.hd l2)) - 48 in
+	 if v2 > ((v1) + ret) then
+	   sub_sub t (List.tl l2) ((Char.chr (((10 + v1) - (v2 - ret)) + 48))::res) 1
+	 else
+	   sub_sub t (List.tl l2) ((Char.chr ((v1 - v2 - ret) + 48)::res)) 0
+       end
+  in
+  let len1 = List.length b1.value in
+  let len2 = List.length b2.value in
+  if len1 > len2 then
+    {value = (sub_sub (List.rev b1.value) (List.rev (add_zeros b2.value (len1 - len2))) [] 0) ;
+     sign = 0 }
+  else
+    {value = (sub_sub (List.rev (add_zeros b1.value (len2 - len1))) (List.rev b2.value) [] 0) ;
+     sign = 0 }
+
   
 (* Addition infinie sur deux entiers non signes *)
 let add b1 b2 =
@@ -109,6 +133,17 @@ let mul b1 b2 =
       | false -> mul2 (add result b2) (add resa { value = '1'::[]; sign = 0 }) (compare_bigints resa.value b1.value)
     in mul2 { value = '0'::[]; sign = 0 } res false;;
 
+let div b1 b2 =
+  let res = b2 in
+  if (compare_bigints  b2.value ('0'::[])) = true
+					       (*|| (compare_bigints  b2.value ('0'::[])) = true*)
+  then { value = '#'::[]; sign = 0}
+  else
+    let rec div2 result resa = function
+      | true  -> result
+      | false -> div2 (sub  b2 result) (sub resa { value = '1'::[]; sign = 0 }) (compare_bigints resa.value ('1'::[]))
+    in div2 b1 res false
+  
 (*
 let sub b1 b2 =
   if b1.sign = 0 then { value = '1'::[]; sign = 0}
