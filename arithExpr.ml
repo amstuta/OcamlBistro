@@ -145,40 +145,7 @@ let only_one_nbr expr =
   if (String.length expr) = 0 then true
   else if expr.[0] = '-' then oon_in (String.length expr) 1
   else oon_in (String.length expr) 0
-
 	      
-(* Trouve le prochain operateur dans la chaine *)
-let rec next_op expr idx =
-  if idx = (String.length expr) then '+'
-  else match expr.[idx] with
-       | '+' | '-' | '*' | '/' | '%' -> expr.[idx]
-       | _ -> next_op expr (idx + 1)
-
-		      
-(* Trouve la len du nbr qui suit *)
-let rec get_nb_length expr idx r =
-  if idx = (String.length expr) then r
-  else if r = 0 && expr.[idx] = '-' then
-    get_nb_length expr (idx + 1) (r + 1)
-  else match expr.[idx] with
-       | '+' | '-' | '*' | '/' | '%' -> r
-       | _ -> get_nb_length expr (idx + 1) (r + 1)
-
-			    
-(* Trouve le dernier operateur de priorite *)
-let get_priority_end expr idx =
-  let rec gpe_in beg i =
-    if i = (String.length expr) then
-      begin
-	if beg = idx then ((String.length expr) - 1)
-	else (beg + (get_nb_length expr (beg + 1) 0))
-      end
-    else match expr.[i] with
-	 | '(' -> gpe_in beg (find_par expr (i + 1))
-	 | '+' | '-' -> gpe_in i (i + 1)
-	 | _ -> gpe_in beg (i + 1)
-  in gpe_in idx idx
-
 	    
 (* Parcourt l'expr et construit les listes d'ops & d'exprs *)
 let rec feed expr =
@@ -216,25 +183,7 @@ let rec feed expr =
   else if (is_number expr.[1]) = true && expr.[0] = '-' then feed_in 0 1 [] []
   else feed_in 1 1 [] []
 
-
-(* Ajoute des parentheses pour les priorites *)
-let add_parenthesis expr =
-  let rec ap_in idx nexpr =
-    if idx = (String.length expr) then nexpr
-    else
-      begin
-	let nop = next_op expr idx in
-	if nop = '*' || nop = '/' || nop = '%' then
-	  let nidx = get_priority_end expr idx in
-	  let n = (String.make 1 '(')^(String.sub expr idx (nidx - idx + 1))^(String.make 1 ')') in
-	  ap_in (nidx + 1) (nexpr^n)
-	else
-	  ap_in (idx + 1) (nexpr^(String.make 1 expr.[idx]))
-      end
-  in ap_in 0 ""
-
-	   
+	       
 (* Resoud une expression *)
 let solve_arith_expr expr =
-  let a = add_parenthesis expr in
-  eval_expr (feed a)
+  eval_expr (feed expr)
