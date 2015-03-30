@@ -11,10 +11,6 @@ let add_zeros l nb =
   in List.append (add_zeros_in nb) l
 		 
 
-
-
-
-
 (*
 let convert_base from tob nbr =
   let diviseur = (String.length tob) in
@@ -63,11 +59,18 @@ let string_of_bigint nbr =
   if nbr.sign = 0 then build_str "" nbr.value
   else build_str "-" nbr.value;;
 
+let rec rm_zeros list =
+  if (List.hd list) = '0' && List.tl != []
+  then
+    rm_zeros (List.tl list)
+  else
+    list
+    
 (*soustraction infinie*)
 let sub b1 b2 =
   let rec sub_sub l1 l2 res ret=
     match l1 with
-    | []   -> if ret = 1 then '1'::res else res
+    | []   -> if (List.hd res) = '0' then (List.tl res) else res
     | h::t ->
        begin
 	 let v1 = (Char.code h) - 48 in
@@ -141,7 +144,7 @@ let div b1 b2 =
   else
     let rec div2 result resa = function
       | true  -> result
-      | false -> div2 (sub  b2 result) (sub resa { value = '1'::[]; sign = 0 }) (compare_bigints resa.value ('1'::[]))
+      | false -> div2 (sub b2 result) (sub resa { value = '1'::[]; sign = 0 }) (compare_bigints resa.value ('0'::[]))
     in div2 b1 res false
   
 (*
