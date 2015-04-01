@@ -60,13 +60,13 @@ let rec eval_expr = function
   | Sum(expr1, expr2) -> add (eval_expr expr1) (eval_expr expr2)
   | Sub(expr1, expr2) -> sub (eval_expr expr1) (eval_expr expr2)
   | Mul(expr1, expr2) -> mul (eval_expr expr1) (eval_expr expr2)
-  | Div(expr1, expr2) ->
-     begin
+  | Div(expr1, expr2) -> div (eval_expr expr1) (eval_expr expr2)
+     (*begin
        let tmp = eval_expr expr2 in
        match tmp with
        (*| 0 -> raise (Failure "Division par 0!")*)
-       | _ -> div (eval_expr expr1) (eval_expr expr2)
-     end(*
+       | _ -> 
+     end(**)
   | Mod(expr1, expr2) ->
      begin
        let tmp = eval_expr expr2 in

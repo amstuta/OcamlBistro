@@ -60,7 +60,7 @@ let string_of_bigint nbr =
   else build_str "-" nbr.value;;
 
 let rec rm_zeros list =
-  if (List.hd list) = '0' && List.tl != []
+  if ((List.hd list) = '0' && List.tl list != [])
   then
     rm_zeros (List.tl list)
   else
@@ -70,15 +70,15 @@ let rec rm_zeros list =
 let sub b1 b2 =
   let rec sub_sub l1 l2 res ret=
     match l1 with
-    | []   -> if (List.hd res) = '0' then (List.tl res) else res
+    | []   -> (rm_zeros res)
     | h::t ->
        begin
 	 let v1 = (Char.code h) - 48 in
 	 let v2 = (Char.code (List.hd l2)) - 48 in
-	 if v2 > ((v1) + ret) then
-	   sub_sub t (List.tl l2) ((Char.chr (((10 + v1) - (v2 - ret)) + 48))::res) 1
+	 if (v2 + ret) > (v1) then
+	   sub_sub t (List.tl l2) ((Char.chr (((10 + v1) - (v2 + ret)) + 48))::res) 1
 	 else
-	   sub_sub t (List.tl l2) ((Char.chr ((v1 - v2 - ret) + 48)::res)) 0
+	   sub_sub t (List.tl l2) ((Char.chr ((v1 - (v2 + ret)) + 48)::res)) 0
        end
   in
   let len1 = List.length b1.value in
@@ -137,14 +137,14 @@ let mul b1 b2 =
     in mul2 { value = '0'::[]; sign = 0 } res false;;
 
 let div b1 b2 =
-  let res = b2 in
+  let res = { value = '0'::[]; sign = 0} in
   if (compare_bigints  b2.value ('0'::[])) = true
 					       (*|| (compare_bigints  b2.value ('0'::[])) = true*)
   then { value = '#'::[]; sign = 0}
   else
     let rec div2 result resa = function
-      | true  -> result
-      | false -> div2 (sub b2 result) (sub resa { value = '1'::[]; sign = 0 }) (compare_bigints resa.value ('0'::[]))
+      | true  -> resa
+      | false -> div2 (sub result b2) (add resa { value = '1'::[]; sign = 0 }) (compare_bigints result.value  { value = '0'::[]; sign = 0 }.value)
     in div2 b1 res false
   
 (*
