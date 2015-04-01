@@ -118,6 +118,8 @@ let add b1 b2 =
 
 (* True si b1 = b2 *)
 let rec compare_bigints b1 b2 =
+  if (List.length b1) <> (List.length b2) then false 
+  else
   match (b1, b2) with
   | ([], [])       -> true
   | (h::t, hd::tl) -> if h = hd then compare_bigints t tl else false
@@ -145,9 +147,9 @@ let mul b1 b2 =
 
 let div b1 b2 =
   let res = { value = '0'::[]; sign = 0} in
-  if (compare_bigints  b2.value ('0'::[])) = true
-					       (*|| (compare_bigints  b2.value ('0'::[])) = true*)
-  then { value = '#'::[]; sign = 0}
+  if (compare_bigints  b2.value res.value) = true
+  (*|| (compare_bigints  b2.value ('0'::[])) = true*)
+  then { value = 'e'::'r'::'r'::'o'::'r'::[]; sign = 0}
   else
     let rec div2 result resa = function
       | true  -> 
@@ -220,7 +222,7 @@ let bigint_of_string str =
     else (0, str)
   in
   let get_base str =
-    if (String.get str 0) = '0' then
+    if (String.get str 0) = '0' && (String.length str) > 1 then
       match (String.get str 1) with
       | 'x' -> (Hexadecimal, (String.sub str 2 ((String.length str) - 2)))
       | 'b' -> (Binary, (String.sub str 2 ((String.length str) - 2)))
