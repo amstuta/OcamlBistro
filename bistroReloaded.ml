@@ -13,6 +13,14 @@ let rec check_line idx line =
   else raise (Failure "Invalid operand")
 
 
+(* Chekc si que des espaces sur la ligne *)
+let rec only_spaces idx line =
+  if idx >= (String.length line) then true
+  else match line.[idx] with
+       | ' ' | '\t' -> only_spaces (idx + 1) line
+       | _ -> false
+
+
 (* Lit un fichier ligne par ligne *)
 let rec read_file fd =
   try
@@ -45,11 +53,13 @@ let read_in =
     while true do
       let line = input_line stdin in
       if line = "quit" then exit 1
-      else if (check_line 0 line) = true then
+      else if (only_spaces 0 line) = false && (check_line 0 line) = true then
 	(* Enlever espaces fin *)
 	(*print_endline (string_of_arith_expr2 res);*)
-	print_string "Result: ";
-      print_endline (string_of_bigint (solve_arith_expr line))
+	begin
+	  print_string "Result: ";
+	  print_endline (string_of_bigint (solve_arith_expr line))
+	end
     done;
   with
     End_of_file -> ()
