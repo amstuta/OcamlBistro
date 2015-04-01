@@ -28,13 +28,6 @@ let convert_base from tob nbr =
   in cbase_in [] nbr 1
  *)
 
-(*(* Recupere l'index du char dans la base *)
-let get_index_base c = function
-  | Hexadecimal -> String.index "0123456789ABCDEF" (Char.uppercase c)
-  | Binary      -> String.index "01" c
-  | Octal       -> String.index "01234567" c
- | Decimal     -> String.index "0123456789" c*)
-
 		 
 (* Reverse une string *)
 let reverse_str s =
@@ -148,8 +141,7 @@ let mul b1 b2 =
 let div b1 b2 =
   let res = { value = '0'::[]; sign = 0} in
   if (compare_bigints  b2.value res.value) = true
-  (*|| (compare_bigints  b2.value ('0'::[])) = true*)
-  then { value = 'e'::'r'::'r'::'o'::'r'::[]; sign = 0}
+  then { value = 'E'::'r'::'r'::'o'::'r'::[]; sign = 0}
   else
     let rec div2 result resa = function
       | true  -> 
@@ -160,19 +152,7 @@ let div b1 b2 =
 	 end
       | false -> div2 (add result b2) (add resa { value = '1'::[]; sign = 0 }) (compare_bigints_g (add result b2).value  b1.value)
     in div2 { value = '0'::[]; sign = 0 } res false
-  
-(*
-let sub b1 b2 =
-  if b1.sign = 0 then { value = '1'::[]; sign = 0}
-  else { value = b2.value; sign = b1.sign}
-	 
-let div b1 b2 =
-  if b1.sign = 0 then { value = '1'::[]; sign = 0}
-  else { value = b2.value; sign = b1.sign}
-	 
-let modulo b1 b2 =
-  if b1.sign = 0 then { value = '1'::[]; sign = 0}
-  else { value = b2.value; sign = b1.sign}*)
+
 
 (* Pow bigint nb *)
 let pow nb p =
@@ -181,6 +161,7 @@ let pow nb p =
     else pow_rec nb (p - 1) (mul acc nb)
   in pow_rec nb p {value = '1'::[]; sign = 0}
 
+	     
 (* String -> bigint sans gestion du signe ou de la base *)
 let get_bigint str =
   let get_sign str =
