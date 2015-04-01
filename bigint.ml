@@ -123,6 +123,13 @@ let rec compare_bigints b1 b2 =
   | (h::t, hd::tl) -> if h = hd then compare_bigints t tl else false
   | _              -> false
 
+let rec compare_bigints_g b1 b2 =
+  if (List.length b1) > (List.length b2) then true else
+    match (b1, b2) with
+    | ([], [])       -> true
+    | (h::t, hd::tl) -> if h >= hd then compare_bigints_g t tl else false
+    | _              -> false
+
 
 (* Multiplication infinie *)
 let mul b1 b2 =
@@ -143,9 +150,14 @@ let div b1 b2 =
   then { value = '#'::[]; sign = 0}
   else
     let rec div2 result resa = function
-      | true  -> resa
-      | false -> div2 (sub result b2) (add resa { value = '1'::[]; sign = 0 }) (compare_bigints result.value  { value = '0'::[]; sign = 0 }.value)
-    in div2 b1 res false
+      | true  -> 
+	 begin
+	   if (compare_bigints (sub b1 result).value { value = '0'::[]; sign = 0 }.value) = false then (sub resa  { value = '1'::[]; sign = 0 })
+	   else
+	     resa
+	 end
+      | false -> div2 (add result b2) (add resa { value = '1'::[]; sign = 0 }) (compare_bigints_g (add result b2).value  b1.value)
+    in div2 { value = '0'::[]; sign = 0 } res false
   
 (*
 let sub b1 b2 =
