@@ -11,7 +11,7 @@ MLI =	bigint.mli \
 CAMLC	  = ocamlc
 CAMLDEP	  = ocamldep
 CAMLOPT   = ocamlopt
-CAMLFLAGS = -w A
+CAMLFLAGS = -w Aelz -warn-error A
 
 CMX = $(ML:.ml=.cmx)
 CMO = $(ML:.ml=.cmo)
