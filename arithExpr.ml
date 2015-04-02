@@ -127,7 +127,7 @@ let get_last_nbr expr =
 	 | '+' | '-' | '*' | '/' | '%' | '(' | ')' | ' ' -> idx
 	 | _ -> find_last (idx - 1)
   in let i = find_last (len - 1) in
-     if expr.[i] = '-' && i > 1 && (is_operator expr.[(i - 1)]) = true then
+     if expr.[i] = '-' && i > 1 && (is_operator expr.[(i)]) = true then
        String.sub expr i (len - i)
      else if i = 0 && expr.[i] = '-' then
        String.sub expr i (len - i)

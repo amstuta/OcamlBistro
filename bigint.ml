@@ -43,6 +43,23 @@ let rec split_str str =
   | _  -> str.[0]::(split_str(String.sub str 1 ((String.length str)-1)))
 		     
 
+(* True si b1 = b2 *)
+let rec compare_bigints b1 b2 =
+  if (List.length b1) <> (List.length b2) then false 
+  else
+  match (b1, b2) with
+  | ([], [])       -> true
+  | (h::t, hd::tl) -> if h = hd then compare_bigints t tl else false
+  | _              -> false
+
+let rec compare_bigints_g b1 b2 =
+  if (List.length b1) > (List.length b2) then true else
+    match (b1, b2) with
+    | ([], [])       -> true
+    | (h::t, hd::tl) -> if h >= hd then compare_bigints_g t tl else false
+    | _              -> false
+
+
 (* Convertit un bigint en string *)
 let string_of_bigint nbr =
   let rec build_str str = function
@@ -60,7 +77,7 @@ let rec rm_zeros list =
     list
     
 (*soustraction infinie*)
-let sub b1 b2 =
+let back_sub b1 b2 flg =
   let rec sub_sub l1 l2 res ret=
     match l1 with
     | []   -> (rm_zeros res)
@@ -78,14 +95,13 @@ let sub b1 b2 =
   let len2 = List.length b2.value in
   if len1 > len2 then
     {value = (sub_sub (List.rev b1.value) (List.rev (add_zeros b2.value (len1 - len2))) [] 0) ;
-     sign = 0 }
+     sign = flg }
   else
     {value = (sub_sub (List.rev (add_zeros b1.value (len2 - len1))) (List.rev b2.value) [] 0) ;
-     sign = 0 }
+     sign = flg }
 
-  
 (* Addition infinie sur deux entiers non signes *)
-let add b1 b2 =
+let back_add b1 b2 flg =
   let rec sub_add l1 l2 res ret =
     match l1 with
     | []   -> if ret = 1 then '1'::res else res
@@ -103,28 +119,32 @@ let add b1 b2 =
   let len2 = List.length b2.value in
   if len1 > len2 then
     {value = (sub_add (List.rev b1.value) (List.rev (add_zeros b2.value (len1 - len2))) [] 0) ;
-     sign = 0 }
+     sign = flg }
   else
     {value = (sub_add (List.rev (add_zeros b1.value (len2 - len1))) (List.rev b2.value) [] 0) ;
-     sign = 0 }
+     sign = flg }
 
 
-(* True si b1 = b2 *)
-let rec compare_bigints b1 b2 =
-  if (List.length b1) <> (List.length b2) then false 
-  else
-  match (b1, b2) with
-  | ([], [])       -> true
-  | (h::t, hd::tl) -> if h = hd then compare_bigints t tl else false
-  | _              -> false
-
-let rec compare_bigints_g b1 b2 =
-  if (List.length b1) > (List.length b2) then true else
-    match (b1, b2) with
-    | ([], [])       -> true
-    | (h::t, hd::tl) -> if h >= hd then compare_bigints_g t tl else false
-    | _              -> false
-
+let sub b1 b2 =
+  let flg = if (compare_bigints_g b1.value b2.value) = true then 0
+	    else
+	      1 in
+  let a1 = if (compare_bigints_g b1.value b2.value) = true then b1
+	    else
+	      b2 in
+  let a2 = if (compare_bigints_g b1.value b2.value) = true then b2
+	    else
+	      b1 in
+  if b1.sign = 1 && b2.sign = 0 then back_sub a2 a1 flg
+  else if b1.sign = 0 && b2.sign = 1 then back_add b1 b2 0
+  else if b1.sign = 1 && b2.sign = 1 then back_sub b1 b2 1
+  else back_sub a1 a2 flg
+  
+let add b1 b2 =
+  if b1.sign = 1 && b2.sign = 1 then back_add b1 b2 1
+  else if b1.sign = 0 && b2.sign = 1 then sub b1 b2
+  else if b1.sign = 1 && b2.sign = 0 then sub b2 b1
+  else back_add b1 b2 0
 
 (* Multiplication infinie *)
 let mul b1 b2 =
