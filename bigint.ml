@@ -183,6 +183,16 @@ let div b1 b2 =
       | false -> div2 (add result b2) (add resa { value = '1'::[]; sign = 0 }) (compare_bigints_g (add result b2).value  b1.value)
     in div2 { value = '0'::[]; sign = 0 } res false
 
+let modulo b1 b2 =
+  let res = { value = '0'::[]; sign = 0} in
+  if (compare_bigints  b2.value res.value) = true
+  then { value = 'E'::'r'::'r'::'o'::'r'::[]; sign = 0}
+  else
+    let rec mod2 result resa = function
+      | true  -> (sub b1 (sub result b2))
+      | false -> mod2 (add result b2) (add resa { value = '1'::[]; sign = 0 }) (compare_bigints_g (add result b2).value  b1.value)
+    in mod2 { value = '0'::[]; sign = 0 } res false
+
 
 (* Pow bigint nb *)
 let pow nb p =

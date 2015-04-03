@@ -4,8 +4,8 @@ type arith_expr =
   | Sum of arith_expr * arith_expr
   | Sub of arith_expr * arith_expr
   | Mul of arith_expr * arith_expr
-  | Div of arith_expr * arith_expr(*
-  | Mod of arith_expr * arith_expr*)
+  | Div of arith_expr * arith_expr
+  | Mod of arith_expr * arith_expr
   | Val of bigint
 
 
@@ -13,8 +13,8 @@ let rec string_of_arith_expr = function
   | Sum(expr1, expr2) -> String.concat "" ["("; (string_of_arith_expr expr1); "+"; (string_of_arith_expr expr2); ")"]
   | Mul(expr1, expr2) -> String.concat "" ["("; (string_of_arith_expr expr1); "*"; (string_of_arith_expr expr2); ")"]
   | Sub(expr1, expr2) -> String.concat "" ["("; (string_of_arith_expr expr1); "-"; (string_of_arith_expr expr2); ")"]
-  | Div(expr1, expr2) -> String.concat "" ["("; (string_of_arith_expr expr1); "/"; (string_of_arith_expr expr2); ")"](*
-  | Mod(expr1, expr2) -> String.concat "" ["("; (string_of_arith_expr expr1); "%"; (string_of_arith_expr expr2); ")"]*)
+  | Div(expr1, expr2) -> String.concat "" ["("; (string_of_arith_expr expr1); "/"; (string_of_arith_expr expr2); ")"]
+  | Mod(expr1, expr2) -> String.concat "" ["("; (string_of_arith_expr expr1); "%"; (string_of_arith_expr expr2); ")"]
   | Val(value) -> string_of_bigint value
 
 
@@ -22,8 +22,8 @@ let rec string_of_arith_expr2 = function
   | Sum(expr1, expr2) -> String.concat "" ["(Sum "; (string_of_arith_expr2 expr1); ","; (string_of_arith_expr2 expr2); ")"]
   | Mul(expr1, expr2) -> String.concat "" ["(Mul "; (string_of_arith_expr2 expr1); ","; (string_of_arith_expr2 expr2); ")"]
   | Sub(expr1, expr2) -> String.concat "" ["(Sub "; (string_of_arith_expr2 expr1); ","; (string_of_arith_expr2 expr2); ")"]
-  | Div(expr1, expr2) -> String.concat "" ["(Div "; (string_of_arith_expr2 expr1); ","; (string_of_arith_expr2 expr2); ")"](*
-  | Mod(expr1, expr2) -> String.concat "" ["(Mod "; (string_of_arith_expr2 expr1); ","; (string_of_arith_expr2 expr2); ")"]*)
+  | Div(expr1, expr2) -> String.concat "" ["(Div "; (string_of_arith_expr2 expr1); ","; (string_of_arith_expr2 expr2); ")"]
+  | Mod(expr1, expr2) -> String.concat "" ["(Mod "; (string_of_arith_expr2 expr1); ","; (string_of_arith_expr2 expr2); ")"]
   | Val(value) -> string_of_bigint value;;
 
 let rec print_list_expr = function
@@ -50,8 +50,8 @@ let rec compile_expr nbrs ops =
 	 | '+' -> compile_expr (Sum (lhs, rhs)::nnbrs) t
 	 | '*' -> compile_expr (Mul (lhs, rhs)::nnbrs) t
 	 | '-' -> compile_expr (Sub (lhs, rhs)::nnbrs) t
-	 | '/' -> compile_expr (Div (lhs, rhs)::nnbrs) t(*
-	 | '%' -> compile_expr (Mod (lhs, rhs)::nnbrs) t*)
+	 | '/' -> compile_expr (Div (lhs, rhs)::nnbrs) t
+	 | '%' -> compile_expr (Mod (lhs, rhs)::nnbrs) t
 	 | _   -> compile_expr nbrs t
      end
 
@@ -61,19 +61,7 @@ let rec eval_expr = function
   | Sub(expr1, expr2) -> sub (eval_expr expr1) (eval_expr expr2)
   | Mul(expr1, expr2) -> mul (eval_expr expr1) (eval_expr expr2)
   | Div(expr1, expr2) -> div (eval_expr expr1) (eval_expr expr2)
-     (*begin
-       let tmp = eval_expr expr2 in
-       match tmp with
-       (*| 0 -> raise (Failure "Division par 0!")*)
-       | _ -> 
-     end(**)
-  | Mod(expr1, expr2) ->
-     begin
-       let tmp = eval_expr expr2 in
-       match tmp with
-       | 0 -> raise (Failure "Modulo par 0!")
-       | _ -> (eval_expr expr1) mod (eval_expr expr2)
-     end*)
+  | Mod(expr1, expr2) -> modulo (eval_expr expr1) (eval_expr expr2)
   | Val(value) -> value
   
 
