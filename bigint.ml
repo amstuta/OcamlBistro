@@ -141,22 +141,32 @@ let sub b1 b2 =
   else back_sub a1 a2 flg
   
 let add b1 b2 =
+  let flg = if (compare_bigints_g b1.value b2.value) = true then 0
+	    else
+	      1 in
+  let a1 = if (compare_bigints_g b1.value b2.value) = true then b1
+	    else
+	      b2 in
+  let a2 = if (compare_bigints_g b1.value b2.value) = true then b2
+	    else
+	      b1 in
   if b1.sign = 1 && b2.sign = 1 then back_add b1 b2 1
-  else if b1.sign = 0 && b2.sign = 1 then sub b1 b2
-  else if b1.sign = 1 && b2.sign = 0 then sub b2 b1
+  else if b1.sign = 0 && b2.sign = 1 then back_sub a1 a2 flg 
+  else if b1.sign = 1 && b2.sign = 0 then back_sub a2 a1 flg
   else back_add b1 b2 0
 
 (* Multiplication infinie *)
 let mul b1 b2 =
+  let signn = if b1.sign <> b2.sign then 1 else 0 in
   let res = { value = '1'::[]; sign = 0 } in
   if (compare_bigints  b1.value ('0'::[])) = true
      || (compare_bigints  b2.value ('0'::[])) = true
   then { value = '0'::[]; sign = 0}
   else
     let rec mul2 result resa = function
-      | true  -> result
+      | true  -> {value = result.value; sign = signn}
       | false -> mul2 (add result b2) (add resa { value = '1'::[]; sign = 0 }) (compare_bigints resa.value b1.value)
-    in mul2 { value = '0'::[]; sign = 0 } res false;;
+    in mul2 {value = '0'::[]; sign = 0} res false;;
 
 let div b1 b2 =
   let res = { value = '0'::[]; sign = 0} in
