@@ -58,7 +58,6 @@ let read_in =
       let line = input_line stdin in
       if line = "quit" then exit 1
       else if (only_spaces 0 line) = false && (check_line 0 line) = true then
-	(* Enlever espaces fin *)
 	(*print_endline (string_of_arith_expr2 res);*)
 	begin
 	  print_string "Result: ";
