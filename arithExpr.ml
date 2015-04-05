@@ -37,11 +37,7 @@ let rec compile_expr nbrs ops =
   | []   -> List.hd nbrs
   | h::t ->
      begin
-       (*
-       print_endline "------------";
-       List.iter print_char ops;
-       print_endline "------------";*)
-       if (List.length nbrs < 2) then (List.hd nbrs) (*raise (Failure "Invalid expression")*)
+       if (List.length nbrs < 2) then (List.hd nbrs)
        else
 	 let lhs = List.hd nbrs in
 	 let rhs = List.hd (List.tl nbrs) in
@@ -68,7 +64,7 @@ let rec eval_expr = function
 (* Renvoit idx parenthese correspondante *)
 let find_par str i =
   let rec find_in nb idx =
-    if idx >= (String.length str) then raise (Failure "Missing closing parenthesis")
+    if idx >= (String.length str) then 0
     else match str.[idx] with
 	 | ')' ->
 	    begin
@@ -83,7 +79,7 @@ let find_par str i =
 (* Trouve la parenthese correspondante -> substr *)
 let find_sub_par str i =
   let rec find_in nb idx =
-    if idx >= (String.length str) then raise (Failure "Missing closing parenthesis")
+    if idx >= (String.length str) then 0
     else match str.[idx] with
 	 | ')' ->
 	    begin

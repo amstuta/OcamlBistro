@@ -10,7 +10,11 @@ let rec check_line idx line =
 	|| (String.contains nbrs (Char.lowercase line.[idx]))
 	|| (String.contains ops line.[idx]) = true
   then check_line (idx + 1) line
-  else raise (Failure "Invalid operand")
+  else
+    begin  
+      print_endline "error: invalid character";
+      false
+    end
 
 
 (* Chekc si que des espaces sur la ligne *)
@@ -71,11 +75,11 @@ let main =
   | 1 -> read_in
   | 2 -> check_file (Array.get Sys.argv 2)
   | 3 -> if (Array.get Sys.argv 2) <> "-obase" then
-	   raise (Invalid_argument "Wrong argument")
+	   print_endline "Wrong argument"
 	 else read_in
   | 4 -> if (Array.get Sys.argv 2) <> "-obase" then
-	   raise (Invalid_argument "Wrong argument")
+	   print_endline "Wrong argument"
 	 else check_file (Array.get Sys.argv 3)
-  | _ -> raise (Invalid_argument "Usage: ./bistro [-obase (2|8|10|16)] [inputfile]")
+  | _ -> print_endline "Usage: ./bistro [-obase (2|8|10|16)] [inputfile]"
 
 let _ = main

@@ -10,25 +10,6 @@ let add_zeros l nb =
     | _   -> '0'::(add_zeros_in (nb - 1))
   in List.append (add_zeros_in nb) l
 		 
-
-(*
-let convert_base from tob nbr =
-  let diviseur = (String.length tob) in
-  let rec cbase_in aff nb = function
-    | 0 -> aff
-    | _ ->
-       begin
-	 let quotient = nb / diviseur in
-	 let reste = nb mod diviseur in
-	 if reste >= 0 && reste <= 9 then
-	   cbase_in (reste::aff) quotient quotient
-	 else
-	   cbase_in ((reste + 55)::aff) quotient quotient
-       end
-  in cbase_in [] nbr 1
- *)
-
-		 
 (* Reverse une string *)
 let reverse_str s =
   let rec rev_in i =
@@ -169,6 +150,7 @@ let mul b1 b2 =
     in mul2 {value = '0'::[]; sign = 0} res false;;
 
 let div b1 b2 =
+  let signn = if b1.sign <> b2.sign then 1 else 0 in
   let res = { value = '0'::[]; sign = 0} in
   if (compare_bigints  b2.value res.value) = true
   then { value = 'E'::'r'::'r'::'o'::'r'::[]; sign = 0}
@@ -176,9 +158,9 @@ let div b1 b2 =
     let rec div2 result resa = function
       | true  -> 
 	 begin
-	   if (compare_bigints (sub b1 result).value { value = '0'::[]; sign = 0 }.value) = false then (sub resa  { value = '1'::[]; sign = 0 })
+	   if (compare_bigints (sub b1 result).value { value = '0'::[]; sign = 0 }.value) = false then {value = (sub resa  { value = '1'::[]; sign = 0 }).value;sign = signn}
 	   else
-	     resa
+	     {value = resa.value; sign = signn}
 	 end
       | false -> div2 (add result b2) (add resa { value = '1'::[]; sign = 0 }) (compare_bigints_g (add result b2).value  b1.value)
     in div2 { value = '0'::[]; sign = 0 } res false
@@ -188,10 +170,11 @@ let modulo b1 b2 =
   if (compare_bigints  b2.value res.value) = true
   then { value = 'E'::'r'::'r'::'o'::'r'::[]; sign = 0}
   else
-    let rec mod2 result resa = function
-      | true  -> (sub b1 (sub result b2))
+    (sub b1 (mul (div b1 b2) b2))
+    (*let rec mod2 result resa = function
+      | true  ->
       | false -> mod2 (add result b2) (add resa { value = '1'::[]; sign = 0 }) (compare_bigints_g (add result b2).value  b1.value)
-    in mod2 { value = '0'::[]; sign = 0 } res false
+    in mod2 { value = '0'::[]; sign = 0 } res false*)
 
 
 (* Pow bigint nb *)
